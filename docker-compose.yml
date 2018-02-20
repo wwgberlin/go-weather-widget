@@ -1,0 +1,11 @@
+web:
+  image: golang:1.10-alpine
+  working_dir: /go/src/github.com/ecosia/women-who-go
+  volumes:
+    - .:/go/src/github.com/ecosia/women-who-go
+  environment:
+    - GOPATH=/go
+    - PORT=9999
+  command: go run cmd/weather-widget/main.go
+  ports:
+    - 9999:9999
