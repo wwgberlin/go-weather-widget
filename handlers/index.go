@@ -13,5 +13,7 @@ func NewIndexHandler() http.Handler {
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
-	tpl.Render(w, "index", nil)
+	if err := tpl.Render(w, "index", nil); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

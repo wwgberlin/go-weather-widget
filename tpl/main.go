@@ -3,13 +3,20 @@ package tpl
 import (
 	"fmt"
 	"html/template"
-	"net/http"
+	"io"
+	"io/ioutil"
 )
 
-func Render(w http.ResponseWriter, location string, data interface{}) error {
-	t, err := template.ParseFiles(fmt.Sprintf("templates/%v.go.html", location))
+// Render looks up the given location and renders the template against
+// the given data, writing to the passed io.Writer
+func Render(w io.Writer, location string, data interface{}) error {
+	b, err := ioutil.ReadFile(fmt.Sprintf("templates/%s.go.html", location))
 	if err != nil {
-		return nil
+		return err
+	}
+	t, err := template.New(location).Funcs(helpers).Parse(string(b))
+	if err != nil {
+		return err
 	}
 	return t.Execute(w, data)
 }
