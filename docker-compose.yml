@@ -6,6 +6,7 @@ web:
   environment:
     - GOPATH=/go
     - PORT=9999
+    - WWO_API_KEY=41eb165aa5014c43a72161812182202
   command: go run cmd/weather-widget/main.go
   ports:
     - 9999:9999

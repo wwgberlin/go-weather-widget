@@ -6,6 +6,12 @@ type Forecaster interface {
 	Forecast(location string) (Conditions, error)
 }
 
+type ForecasterFunc func(string) (Conditions, error)
+
+func (f ForecasterFunc) Forecast(location string) (Conditions, error) {
+	return f(location)
+}
+
 // Conditions describes a set of info about the
 // weather in a location on a single point in turn
 type Conditions interface {

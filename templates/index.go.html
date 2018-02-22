@@ -9,10 +9,12 @@
 <body>
 	<h1>{{ concat "Hello" " " "Gophers" }}</h1>
 	<form action="/">
-		<input type="text" name="location" placeholder="Location">
+		<input type="text" name="location" placeholder="Location" value="{{ .query }}">
 	</form>
-	{{ if (and .location .description .celsius) }}
+	{{ if .query }}
 		<p>The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C</p>
+	{{ else }}
+		<p>Enter a location above</p>
 	{{ end }}
 </body>
 </html>

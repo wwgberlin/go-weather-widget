@@ -5,13 +5,13 @@ import (
 
 	"github.com/ecosia/women-who-go/tpl"
 	"github.com/ecosia/women-who-go/weather"
-	"github.com/ecosia/women-who-go/weather/mock"
+	"github.com/ecosia/women-who-go/weather/worldweatheronline"
 )
 
 // NewIndexHandler returns a new handle that is supposed
 // to serve the app's index page
 func NewIndexHandler() http.Handler {
-	return &indexHandler{forecaster: mockweather.New()}
+	return &indexHandler{forecaster: worldweatheronline.New()}
 }
 
 type indexHandler struct {
@@ -19,16 +19,21 @@ type indexHandler struct {
 }
 
 func (i *indexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	data, err := i.forecaster.Forecast(r.URL.Query().Get("location"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if q := r.URL.Query().Get("location"); q != "" {
+		data, err := i.forecaster.Forecast(r.URL.Query().Get("location"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if err := tpl.Render(w, "index", map[string]interface{}{
+			"location":    data.Location(),
+			"description": data.Description(),
+			"celsius":     data.Celsius(),
+			"query":       q,
+		}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
-	if err := tpl.Render(w, "index", map[string]interface{}{
-		"location":    data.Location(),
-		"description": data.Description(),
-		"celsius":     data.Celsius(),
-	}); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	tpl.Render(w, "index", map[string]interface{}{"q": nil})
 }
