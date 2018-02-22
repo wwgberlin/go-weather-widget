@@ -4,13 +4,16 @@ import "github.com/ecosia/women-who-go/weather"
 
 // New returns a new Forecaster that will return mock data
 func New() weather.Forecaster {
-	return &mockForecaster{}
+	f := func(location string) (weather.Conditions, error) {
+		return &mockConditions{location}, nil
+	}
+	return mockForecaster(f)
 }
 
-type mockForecaster struct{}
+type mockForecaster func(string) (weather.Conditions, error)
 
-func (*mockForecaster) Forecast(location string) (weather.Conditions, error) {
-	return &mockConditions{location}, nil
+func (m mockForecaster) Forecast(location string) (weather.Conditions, error) {
+	return m(location)
 }
 
 type mockConditions struct {
