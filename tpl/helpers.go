@@ -7,6 +7,7 @@ import (
 
 var helpers = template.FuncMap{
 	"concat": concat,
+	"title":  strings.Title,
 }
 
 func concat(tokens ...string) string {
