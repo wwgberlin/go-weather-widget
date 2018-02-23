@@ -11,6 +11,7 @@ import (
 
 func main() {
 	port := os.Getenv("PORT")
+	http.Handle("/weather", handlers.NewWeatherHandler())
 	http.Handle("/", handlers.NewIndexHandler())
 
 	log.Printf("Application serving on http://localhost:%s ...", port)

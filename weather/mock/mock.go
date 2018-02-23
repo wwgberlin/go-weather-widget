@@ -7,13 +7,7 @@ func New() weather.Forecaster {
 	f := func(location string) (weather.Conditions, error) {
 		return &mockConditions{location}, nil
 	}
-	return mockForecaster(f)
-}
-
-type mockForecaster func(string) (weather.Conditions, error)
-
-func (m mockForecaster) Forecast(location string) (weather.Conditions, error) {
-	return m(location)
+	return weather.ForecasterFunc(f)
 }
 
 type mockConditions struct {

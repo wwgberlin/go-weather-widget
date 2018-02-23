@@ -6,8 +6,10 @@ type Forecaster interface {
 	Forecast(location string) (Conditions, error)
 }
 
+// ForecasterFunc implements Forecaster calling itself
 type ForecasterFunc func(string) (Conditions, error)
 
+// Forecast returns the current conditions for the given location
 func (f ForecasterFunc) Forecast(location string) (Conditions, error) {
 	return f(location)
 }

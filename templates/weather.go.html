@@ -7,9 +7,9 @@
 	<title>Weather Forecast</title>
 </head>
 <body>
-	<h1>What's the weather in:</h1>
-	<form action="/weather">
+	<form action="/">
 		<input type="text" name="location" placeholder="Location" value="{{ .query }}">
 	</form>
+	<p>The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C</p>
 </body>
 </html>
