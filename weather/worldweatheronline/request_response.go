@@ -39,6 +39,10 @@ func (r *response) Description() string {
 	return r.Data.Conditions[0].Description[0].Value
 }
 
+func (r *response) WeatherCode() string {
+	return r.Data.Conditions[0].WeatherCode
+}
+
 type data struct {
 	RequestInfo []requestInfo `json:"request"`
 	Conditions  []conditions  `json:"current_condition"`
@@ -52,6 +56,7 @@ type requestInfo struct {
 type conditions struct {
 	TemperatureCelsius string         `json:"temp_C"`
 	Description        []wrappedValue `json:"weatherDesc"`
+	WeatherCode        string         `json:"weatherCode"`
 }
 
 type wrappedValue struct {

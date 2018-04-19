@@ -1,12 +1,12 @@
 web:
   image: golang:1.10-alpine
-  working_dir: /go/src/github.com/ecosia/women-who-go
+  working_dir: /go/src/github.com/wwgberlin/go-weather-widget
   volumes:
-    - .:/go/src/github.com/ecosia/women-who-go
+    - .:/go/src/github.com/wwgberlin/go-weather-widget
   environment:
     - GOPATH=/go
-    - PORT=9999
-    - WWO_API_KEY=41eb165aa5014c43a72161812182202
-  command: go run cmd/weather-widget/main.go
+    - PORT=:9999
+    - WWO_API_KEY=f4c3312c49714b8b98e102208181804
+  command: go run main.go
   ports:
     - 9999:9999

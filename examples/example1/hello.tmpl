@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<title>Hello {{.Name}}</title>
+	</head>
+	<body>
+		<h1>Hello {{.Name}}</h1>
+
+		<h3>This is an example for passing args to a template</h3>
+		<p>"." is the object we passed in - in our case a map</p>
+		<p>Rendering ".Name" produces: {{.Name}}</p>
+		<p>Rendering "." produces: {{.}}</p>
+		<p>
+			Notice how when we pass in a map we are able to get value for
+			a key using .Field syntax (like with a struct)
+		</p>
+	</body>
+</html>

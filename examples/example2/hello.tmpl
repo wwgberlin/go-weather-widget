@@ -1,0 +1,12 @@
+<html>
+	<!-- we can pass arguments to the template -->
+	{{template "head" .Name}}
+	<body>
+		<h1>Hello {{.Name}}</h1>
+		
+		<h3>This is an example for executing another template within the template</h3>
+		<p>Syntax to execute a template: {{"{{"}}template "template_name" args {{"}}"}} </p>
+		<p>We sent .Name to the "head" template</p>
+		<p>The "head" template then sees the name and can access it via "."</p>
+	</body>
+</html>

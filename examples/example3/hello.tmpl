@@ -1,0 +1,19 @@
+<html>
+	{{template "head" .Name}}
+	<body>
+		<h1>Hello {{.Name}}</h1>
+
+		<p>This is an example for overriding templates</p>
+		<p>Check out the page source, it should have a title and the comment below should not show</p>
+		<p>
+			This functionality is useful for layouts when we want to nest
+			certain templates (like sidebars) but we also want to avoid errors
+			if the certain page doesn't need a sidebar and doesn't define it
+		</p>
+	</body>
+</html>
+
+<!-- we can pass in default definitions to templates to avoid errors -->
+{{define "head"}}
+	<!--expected not to show -->
+{{end}}

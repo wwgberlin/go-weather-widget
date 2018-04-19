@@ -20,4 +20,5 @@ type Conditions interface {
 	Celsius() int
 	Description() string
 	Location() string
+	WeatherCode() string
 }

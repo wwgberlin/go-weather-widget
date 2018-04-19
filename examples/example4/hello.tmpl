@@ -1,0 +1,12 @@
+<!-- non of this is expected to show !-->
+<html>
+	{{template "head" .Name}}
+	<body>
+		<h1>Hello {{.Name}}</h1>
+	</body>
+</html>
+
+<!-- Only this part will show -->
+{{define "nested"}}
+	<h1>This is an example of executing a template by name</h1>
+{{end}}

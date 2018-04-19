@@ -1,0 +1,38 @@
+{{define "fun"}}
+	<html>
+		<body>
+			<p>
+				<!-- range over a variable -->
+				{{range .MyRange}}
+					{{.}}
+				{{end}}
+			</p>
+			<!-- if a == b -->
+			{{if eq 1 1}}
+				<p>1 equals 1</p>
+			{{end}}
+
+			<!-- if a != b -->
+			{{if ne 1 2}}
+				<p>1 doesn't equal 2</p>
+			{{end}}
+
+			<p>
+				<!-- define a variable -->
+				{{$bar := "bar"}}
+				<!-- foo comes from the FuncMap -->
+				{{foo $bar}}
+			</p>
+
+			<p>
+				<!-- mkSlice comes from FuncMap-->
+				{{$a := mkSlice 1 2 3 4}}
+				a: {{$a}}
+			</p>
+			<p>
+				<!-- reverse comes from FuncMap-->
+				reversed: {{reverse $a}}
+			</p>
+		</body>
+	</html>
+{{end}}

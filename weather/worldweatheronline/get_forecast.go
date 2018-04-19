@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/ecosia/women-who-go/weather"
+	"github.com/wwgberlin/go-weather-widget/weather"
 )
 
 var (
@@ -24,17 +24,19 @@ func getForecast(location string) (weather.Conditions, error) {
 	res, resErr := http.Get(
 		fmt.Sprintf("%s/%s?%s", apiURL, weatherEndpoint, params),
 	)
-	if resErr != nil || res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Request errored %v with status %v", resErr, res.StatusCode)
+	if resErr != nil {
+		return nil, fmt.Errorf("request errored %s", resErr)
+	} else if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("request errored with status %v", res.StatusCode)
 	}
 	defer res.Body.Close()
-	bytes, bytesErr := ioutil.ReadAll(res.Body)
+	b, bytesErr := ioutil.ReadAll(res.Body)
 	if bytesErr != nil {
 		return nil, bytesErr
 	}
-	response := &response{}
-	if unmarshalErr := json.Unmarshal(bytes, response); unmarshalErr != nil {
+	var response response
+	if unmarshalErr := json.Unmarshal(b, &response); unmarshalErr != nil {
 		return nil, unmarshalErr
 	}
-	return response, nil
+	return &response, nil
 }

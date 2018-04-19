@@ -1,4 +1,4 @@
-# women-who-go
+# go-weather-widget
 Eccosia's weather widget wingding challenge for WWG Berlin
 
 ## Run the application:

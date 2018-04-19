@@ -1,0 +1,19 @@
+{{define "title"}}
+	Weather Forecast in {{.location}}
+{{end}}
+
+{{define "content"}}
+	<form action="/">
+		<button onclick="goBack()">Go Back</button>
+	</form>
+	<p>The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C. Code {{.code}}</p>
+{{end}}
+
+{{define "scripts"}}
+	<script>
+		function goBack() {
+			window.history.back();
+		}
+	</script>
+{{end}}
+

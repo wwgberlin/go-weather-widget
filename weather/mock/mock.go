@@ -1,6 +1,6 @@
 package mockweather
 
-import "github.com/ecosia/women-who-go/weather"
+import "github.com/wwgberlin/go-weather-widget/weather"
 
 // New returns a new Forecaster that will return mock data
 func New() weather.Forecaster {
