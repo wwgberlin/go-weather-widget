@@ -1,12 +1,8 @@
 web:
-  image: golang:1.10-alpine
+  image: golang:1.10
   working_dir: /go/src/github.com/wwgberlin/go-weather-widget
   volumes:
     - .:/go/src/github.com/wwgberlin/go-weather-widget
-  environment:
-    - GOPATH=/go
-    - PORT=:9999
-    - WWO_API_KEY=f4c3312c49714b8b98e102208181804
-  command: go run main.go
+  command: bash -c "go test ./... && go build . && ./go-weather-widget -port=8080 -api_key=f4c3312c49714b8b98e102208181804"
   ports:
-    - 9999:9999
+    - 8080:8080

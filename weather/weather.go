@@ -10,8 +10,12 @@ type Forecaster interface {
 type ForecasterFunc func(string) (Conditions, error)
 
 // Forecast returns the current conditions for the given location
-func (f ForecasterFunc) Forecast(location string) (Conditions, error) {
-	return f(location)
+func (f ForecasterFunc) Forecast(location string) (forecast Conditions, err error) {
+	if forecast, err = f(location); err != nil {
+		return
+	}
+	err = forecast.Error()
+	return
 }
 
 // Conditions describes a set of info about the
@@ -20,5 +24,5 @@ type Conditions interface {
 	Celsius() int
 	Description() string
 	Location() string
-	WeatherCode() string
+	Error() error
 }

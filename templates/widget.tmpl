@@ -1,0 +1,80 @@
+{{define "title"}}
+	Weather Forecast in {{.location}}
+{{end}}
+
+{{define "content"}}
+	<form action="/">
+		<button onclick="goBack()">Go Back</button>
+	</form>
+	{{$clothes := clothings .description .celsius}}
+	<div class="base" >
+		{{range $clothes}}
+			<div class="inner {{.}}"></div>
+		{{end}}
+	</div>
+	<p class="description">The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C</p>
+{{end}}
+
+{{define "styles"}}
+<style>
+	div.base {
+		height: 200px;
+		width: 200px;
+		margin:0 auto;
+		background-size: 200px 200px;
+		background-image: url("/images/base_gopher.png");
+	}
+	div.boots{
+		height: 200px;
+		width: 200px;
+		background-size: 200px 200px;
+		background-image: url("/images/boots.png");
+	}
+	div.coat{
+		height: 200px;
+		width: 200px;
+		background-size: 200px 200px;
+		background-image: url("/images/coat.png");
+	}
+	div.sunglasses{
+		height: 200px;
+		width: 200px;
+		background-size: 200px 200px;
+		background-image: url("/images/sunglasses.png");
+	}
+	div.hat{
+		height: 200px;
+		width: 200px;
+		background-size: 200px 200px;
+		background-image: url("/images/hat.png");
+	}
+	div.tshirt{
+		height: 200px;
+		width: 200px;
+		background-size: 200px 200px;
+		background-image: url("/images/tshirt.png");
+	}
+	div.scarf{
+		height: 200px;
+		width: 200px;
+		background-size: 200px 200px;
+		background-image: url("/images/scarf.png");
+	}
+	.description{
+		text-align: center;
+	}
+	.inner {
+		position: absolute;
+	}
+
+</style>
+{{end}}
+
+{{define "scripts"}}
+	<script>
+		function goBack() {
+			window.history.back();
+		}
+	</script>
+{{end}}
+

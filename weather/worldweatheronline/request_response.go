@@ -1,19 +1,19 @@
 package worldweatheronline
 
 import (
+	"errors"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 )
 
 type request string
 
-func (r request) encodeWithDefaults() string {
+func (r request) encodeWithDefaults(apiKey string) string {
 	u := url.Values{
 		"format":   []string{"json"},
 		"num_days": []string{"1"},
-		"key":      []string{os.Getenv("WWO_API_KEY")},
+		"key":      []string{apiKey},
 		"q":        []string{string(r)},
 	}
 	return u.Encode()
@@ -21,6 +21,21 @@ func (r request) encodeWithDefaults() string {
 
 type response struct {
 	Data data `json:"data"`
+}
+
+// Location returns the location query
+func (r *response) Error() error {
+	if len(r.Data.Error) == 0 {
+		return nil
+	}
+	errMsg := "API responded with errors: "
+	for i, e := range r.Data.Error {
+		if i != 0 {
+			errMsg += ","
+		}
+		errMsg += e.Msg
+	}
+	return errors.New(errMsg)
 }
 
 // Location returns the location query
@@ -39,11 +54,10 @@ func (r *response) Description() string {
 	return r.Data.Conditions[0].Description[0].Value
 }
 
-func (r *response) WeatherCode() string {
-	return r.Data.Conditions[0].WeatherCode
-}
-
 type data struct {
+	Error []struct {
+		Msg string `json:"msg"`
+	} `json:"error"`
 	RequestInfo []requestInfo `json:"request"`
 	Conditions  []conditions  `json:"current_condition"`
 }
@@ -56,7 +70,6 @@ type requestInfo struct {
 type conditions struct {
 	TemperatureCelsius string         `json:"temp_C"`
 	Description        []wrappedValue `json:"weatherDesc"`
-	WeatherCode        string         `json:"weatherCode"`
 }
 
 type wrappedValue struct {
