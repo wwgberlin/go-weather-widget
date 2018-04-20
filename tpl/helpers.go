@@ -38,20 +38,20 @@ func clothings(weatherDesc string, celsius int) (clothes []string) {
 	if umbrellaStr.Match([]byte(weatherDesc)) {
 		clothes = append(clothes, "umbrella")
 	}
-	switch {
-	case celsius > 12:
+	if celsius > 15 {
 		clothes = append(clothes, "tshirt")
-		fallthrough
-	case celsius > 20:
+	}
+	if celsius > 20 {
 		clothes = append(clothes, "sunglasses")
-		fallthrough
-	case celsius > 22:
+	}
+	if celsius > 22 {
 		clothes = append(clothes, "hat")
-	case celsius < 15:
+	}
+	if celsius < 15 {
 		clothes = append(clothes, "boots")
 		clothes = append(clothes, "scarf")
-		fallthrough
-	case celsius <= 12:
+	}
+	if celsius <= 15 {
 		clothes = append(clothes, "coat")
 	}
 	return clothes
