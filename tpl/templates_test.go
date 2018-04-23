@@ -177,10 +177,6 @@ func TestTemplateWidget(t *testing.T) {
 		t.Error("widget.tmpl was expected to define template styles")
 	}
 
-	if tmpl.Lookup("scripts") == nil {
-		t.Error("widget.tmpl was expected to define template scripts")
-	}
-
 	rr := httptest.NewRecorder()
 
 	if err = tmpl.ExecuteTemplate(rr, "content", map[string]interface{}{
