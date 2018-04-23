@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"github.com/wwgberlin/go-weather-widget/tpl"
 	"github.com/wwgberlin/go-weather-widget/weather/worldweatheronline"
@@ -22,7 +20,7 @@ func main() {
 		return
 	}
 
-	rdr := tpl.NewRenderer(filepath.Join(getPath(), "templates"))
+	rdr := tpl.NewRenderer("./tpl/templates", tpl.Helpers, "layout")
 
 	http.HandleFunc("/", indexHandler(rdr))
 	http.HandleFunc("/weather", widgetHandler(rdr, worldweatheronline.New(*apiKey)))
@@ -43,12 +41,4 @@ func validateInput(port string, apiKey string) bool {
 	}
 
 	return true
-}
-
-func getPath() string {
-	path, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	return path
 }

@@ -7,12 +7,16 @@ import (
 )
 
 type Renderer struct {
-	path string
+	path       string
+	helpers    template.FuncMap
+	layoutName string
 }
 
-func NewRenderer(pathToTemplates string) *Renderer {
+func NewRenderer(pathToTemplates string, helpers template.FuncMap, layoutName string) *Renderer {
 	return &Renderer{
-		path: pathToTemplates,
+		path:       pathToTemplates,
+		helpers:    helpers,
+		layoutName: layoutName,
 	}
 }
 
@@ -21,12 +25,12 @@ func NewRenderer(pathToTemplates string) *Renderer {
 // initialize the first item of the slice with the path to the template
 // iterate over the dependencies and add the respective file names to the array
 func (r *Renderer) BuildTemplate(name string, files ...string) (*template.Template, error) {
-	return template.New(name).Funcs(helpers).ParseFiles(files...)
+	return template.New(name).Funcs(r.helpers).ParseFiles(files...)
 }
 
 func (r *Renderer) RenderTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) error {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	return tmpl.ExecuteTemplate(w, "layout", data)
+	return tmpl.ExecuteTemplate(w, r.layoutName, data)
 }
 
 func (r *Renderer) PathToTemplateFiles(templates ...string) []string {

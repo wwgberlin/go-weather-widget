@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var helpers = template.FuncMap{
+var Helpers = template.FuncMap{
 	"title":     strings.Title,
 	"clothings": clothings,
 }
@@ -33,5 +33,9 @@ func clothings(weatherDesc string, celsius int) (clothes []string) {
 	if celsius <= 15 {
 		clothes = append(clothes, "coat")
 	}
+	if celsius <= 10 {
+		clothes = append(clothes, "winterhat")
+	}
+
 	return clothes
 }

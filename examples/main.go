@@ -4,21 +4,10 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 )
 
-var path string
-
-func init() {
-	var err error
-
-	if path, err = os.Getwd(); err != nil {
-		panic(err)
-	}
-
-	path = filepath.Join(path, "examples")
-}
+var path = "./examples"
 
 // basic templates: pass arguments to a template and execute
 // http://127.0.0.1:8080/example1?name=Women%20Who%20Go
