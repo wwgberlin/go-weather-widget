@@ -30,7 +30,9 @@ func indexHandler(rdr renderer) func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := rdr.RenderTemplate(w, tmpl, nil); err != nil {
+		queryStr := r.URL.Query().Get("query")
+
+		if err := rdr.RenderTemplate(w, tmpl, map[string]interface{}{"query": queryStr}); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}

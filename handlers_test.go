@@ -273,12 +273,12 @@ func checkTemplates(layouts, expectedLayouts []string) error {
 
 func checkResponse(code, expectedCode int, body, expectedBody string) error {
 	if code != expectedCode {
-		return fmt.Errorf("handler returned wrong status code: got %d want %d",
+		return fmt.Errorf("handler returned wrong status code: Got %d want %d",
 			code, expectedCode)
 	}
 
 	if body != expectedBody {
-		return fmt.Errorf("handler returned unexpected body: got %s want %s",
+		return fmt.Errorf("handler returned unexpected body: Got '%s' want '%s'",
 			body, expectedBody)
 	}
 	return nil

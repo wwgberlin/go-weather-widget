@@ -1,7 +1,6 @@
 package weather
 
 import (
-	"errors"
 	"testing"
 )
 
@@ -22,15 +21,4 @@ func TestForecasterFunc_Forecast(t *testing.T) {
 		t.Error("unexpected error from forecaster")
 	}
 
-}
-
-func TestForecasterFunc_ForecastErrors(t *testing.T) {
-	forecaster := ForecasterFunc(func(s string) (*Conditions, error) {
-		return &Conditions{
-			Error: errors.New("some error"),
-		}, nil
-	})
-	if _, err := forecaster.Forecast("some location"); err == nil {
-		t.Error("forecaster expected to extract Error field and return the error")
-	}
 }

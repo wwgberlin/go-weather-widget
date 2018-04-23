@@ -160,7 +160,7 @@ func TestTemplatesHeadWithStyles(t *testing.T) {
 
 func TestTemplateWidget(t *testing.T) {
 	h := copyFuncMap(Helpers)
-	h["clothe"] = myClothe
+	h["clothes"] = myClothes
 
 	tmpl := template.New("widget").Funcs(h)
 	tmpl, err := tmpl.ParseFiles("./templates/widget.tmpl")
@@ -196,13 +196,13 @@ func TestTemplateWidget(t *testing.T) {
 		t.Error("expected to render div with class 'base'")
 	} else {
 		gopherDiv := doc.Find("div.base")
-		if gopherDiv.Find(".sandals").Length() == 0 {
-			t.Error("gopher was expected to have sandals")
+		if gopherDiv.Find(".fedora").Length() == 0 {
+			t.Error("gopher was expected to have a fedora")
 		}
 	}
 }
 
-func myClothe(args ...interface{}) ([]string, error) {
+func myClothes(args ...interface{}) ([]string, error) {
 	if len(args) < 2 {
 		return nil, errors.New("clothe expects 2 arguments to be passed (description, celsius)")
 	}
@@ -216,7 +216,7 @@ func myClothe(args ...interface{}) ([]string, error) {
 	} else if celsius != 25 {
 		return nil, errors.New("first argument in clothes was expected to be the weather celsius")
 	}
-	return []string{"sandals"}, nil
+	return []string{"fedora"}, nil
 }
 
 func copyFuncMap(m map[string]interface{}) map[string]interface{} {

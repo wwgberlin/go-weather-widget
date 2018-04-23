@@ -1,28 +1,25 @@
-{{define "title"}}
-	<title>Weather Forecast in {{.location}}</title>
-{{end}}
-
 {{define "content"}}
-	<form action="/">
-		<button onclick="goBack()">Go Back</button>
-	</form>
+	<a href="/?query={{.location}}">Search again</a>
 	<div class="base" >
-		{{range clothe .description .celsius}}
-			<div class="{{.}}"></div>
-		{{end}}
+		<!--
+				DRESS YOUR GOPHER HERE!!
+				add the function clothes to the helpers FuncMap
+				range over the clothes and create dives with class="piece"
+				for every piece.
+				e.g. if the result of clothes is []string{"umbrella", "tshirt"}
+				Your output should be <div class="umbrella"/><div class="tshirt"/>
+				{{range clothes .description .celsius}}
+					<div class="{{.}}"></div>
+				{{end}}
+			-->
 	</div>
 	<p class="description">The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C</p>
+{{end}}
+
+{{define "title"}}
+	<title>Weather Forecast in {{.location}}</title>
 {{end}}
 
 {{define "styles"}}
 	<link rel="stylesheet" href="styles/widget.css">
 {{end}}
-
-{{define "scripts"}}
-	<script>
-		function goBack() {
-			window.history.back();
-		}
-	</script>
-{{end}}
-

@@ -11,17 +11,12 @@ type ForecasterFunc func(string) (*Conditions, error)
 
 // Forecast returns the current conditions for the given location
 func (f ForecasterFunc) Forecast(location string) (forecast *Conditions, err error) {
-	if forecast, err = f(location); err != nil {
-		return
-	}
-	err = forecast.Error
-	return
+	return f(location)
 }
 
 // Conditions describes a set of info about the
 // weather in a location on a single point in turn
 type Conditions struct {
-	Error       error
 	Location    string
 	Celsius     int
 	Description string
