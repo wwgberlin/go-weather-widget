@@ -45,7 +45,7 @@ func TestBuildTemplate_FuncMap(t *testing.T) {
 
 	files := rdr.PathToTemplateFiles("success1.tmpl", "success2.tmpl")
 	if _, err := rdr.BuildTemplate(files...); err != nil {
-		t.Errorf("Unexpected error received: %v. Did you call FuncMap?", err)
+		t.Errorf("Unexpected error received: %v. Did you pass the helpers to Funcs?", err)
 	}
 }
 

@@ -30,9 +30,9 @@ func indexHandler(rdr renderer) func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryStr := r.URL.Query().Get("query")
+		queryStr := r.URL.Query().Get("location")
 
-		if err := rdr.RenderTemplate(w, tmpl, map[string]interface{}{"query": queryStr}); err != nil {
+		if err := rdr.RenderTemplate(w, tmpl, map[string]interface{}{"location": queryStr}); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
@@ -55,7 +55,6 @@ func indexHandler(rdr renderer) func(w http.ResponseWriter, r *http.Request) {
 
 func widgetHandler(rdr renderer, forecaster forcaster) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Not implemented", http.StatusInternalServerError)
-		return
+		http.Error(w, "not implemented", http.StatusNotImplemented)
 	}
 }

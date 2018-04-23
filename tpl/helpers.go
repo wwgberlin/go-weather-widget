@@ -7,7 +7,8 @@ import (
 )
 
 var Helpers = template.FuncMap{
-	"title": strings.Title,
+	"title":   strings.Title,
+	"clothes": clothes,
 }
 
 var umbrellaStr = regexp.MustCompile("[[R|r]ain|[D|d]rizzl|[S|s]leet")

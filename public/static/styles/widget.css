@@ -1,6 +1,6 @@
 div.base {
-	height: 300px;
-	width: 300px;
+	height: 200px;
+	width: 200px;
 	margin:0 auto;
 	background-size: 200px 200px;
 	background-repeat: no-repeat;
@@ -38,7 +38,7 @@ div.tshirt{
 div.scarf{
 	background-size: 200px 200px;
 	background-image: url("/images/scarf.png");
-	z-index: 98;
+	z-index: 90;
 }
 div.winterhat{
 	background-size: 200px 200px;

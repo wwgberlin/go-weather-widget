@@ -1,14 +1,18 @@
 {{define "content"}}
-	<a href="/?query={{.location}}">Search again</a>
+	<a href="/?location={{.location}}">Search again</a>
 	<div class="base" >
 		<!--
-				DRESS YOUR GOPHER HERE!!
-				add the function clothes to the helpers FuncMap
-				range over the clothes and create dives with class="piece"
-				for every piece.
-				e.g. if the result of clothes is []string{"umbrella", "tshirt"}
-				Your output should be <div class="umbrella"/><div class="tshirt"/>
-			-->
+
+			DRESS YOUR GOPHER HERE!!
+			1. Add the function clothes to the helpers FuncMap
+
+			2. Range over the clothes and create <div> element with
+			class="[piece]" for every piece. One div per clothing piece.
+
+			Example if the result of clothes is []string{"umbrella", "tshirt"}
+			Your output should be <div class="umbrella"/><div class="tshirt"/>
+
+		-->
 	</div>
 	<p class="description">The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C</p>
 {{end}}
