@@ -45,8 +45,12 @@ func getForecast(apiKey string) func(string) (*weather.Conditions, error) {
 }
 
 func buildResponse(response *response) *weather.Conditions {
+	if response.Error() != nil {
+		return &weather.Conditions{
+			Error: response.Error(),
+		}
+	}
 	return &weather.Conditions{
-		Error:       response.Error(),
 		Celsius:     response.Celsius(),
 		Description: response.Description(),
 		Location:    response.Location(),

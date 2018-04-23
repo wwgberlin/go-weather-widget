@@ -6,10 +6,9 @@
 	<form action="/">
 		<button onclick="goBack()">Go Back</button>
 	</form>
-	{{$clothes := clothings .description .celsius}}
 	<div class="base" >
-		{{range $clothes}}
-			<div class="inner {{.}}"></div>
+		{{range clothe .description .celsius}}
+			<div class="{{.}}"></div>
 		{{end}}
 	</div>
 	<p class="description">The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C</p>

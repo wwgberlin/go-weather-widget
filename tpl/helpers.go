@@ -7,24 +7,27 @@ import (
 )
 
 var Helpers = template.FuncMap{
-	"title":     strings.Title,
-	"clothings": clothings,
+	"title":  strings.Title,
+	"clothe": clothe,
 }
 
 var umbrellaStr = regexp.MustCompile("[[R|r]ain|[D|d]rizzl|[S|s]leet")
 
-func clothings(weatherDesc string, celsius int) (clothes []string) {
+func clothe(weatherDesc string, celsius int) (clothes []string) {
 	if umbrellaStr.Match([]byte(weatherDesc)) {
 		clothes = append(clothes, "umbrella")
+	} else {
+		if celsius > 22 {
+			clothes = append(clothes, "hat")
+		} else if celsius <= 10 {
+			clothes = append(clothes, "winterhat")
+		}
 	}
 	if celsius > 15 {
 		clothes = append(clothes, "tshirt")
 	}
 	if celsius > 20 {
 		clothes = append(clothes, "sunglasses")
-	}
-	if celsius > 22 {
-		clothes = append(clothes, "hat")
 	}
 	if celsius < 15 {
 		clothes = append(clothes, "boots")
@@ -33,9 +36,5 @@ func clothings(weatherDesc string, celsius int) (clothes []string) {
 	if celsius <= 15 {
 		clothes = append(clothes, "coat")
 	}
-	if celsius <= 10 {
-		clothes = append(clothes, "winterhat")
-	}
-
 	return clothes
 }
