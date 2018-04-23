@@ -23,9 +23,9 @@ func NewRenderer(pathToTemplates string, helpers template.FuncMap, layoutName st
 // BuildTemplate attempts to build a new template with the given name,
 // given files and the helper functions in the renderer.
 // it returns the template or the error.
-func (r *Renderer) BuildTemplate(name string, files ...string) (*template.Template, error) {
+func (r *Renderer) BuildTemplate(files ...string) (*template.Template, error) {
 	//return nil, errors.New("not implemented")
-	return template.New(name).Funcs(r.helpers).ParseFiles(files...)
+	return template.New(r.layoutName).Funcs(r.helpers).ParseFiles(files...)
 }
 
 // RenderTemplate executes the provided template by the renderer's layout name

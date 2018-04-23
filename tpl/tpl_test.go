@@ -21,9 +21,8 @@ func renderer(layoutName string, helpers *template.FuncMap) (rdr *tpl.Renderer) 
 func TestBuildTemplate(t *testing.T) {
 	rdr := renderer("layout", nil)
 
-	tmplName := "myName"
 	files := rdr.PathToTemplateFiles("success1.tmpl")
-	tmpl, err := rdr.BuildTemplate(tmplName, files...)
+	tmpl, err := rdr.BuildTemplate(files...)
 
 	if err != nil {
 		t.Errorf("Unexpected error received %v", err)
@@ -31,9 +30,6 @@ func TestBuildTemplate(t *testing.T) {
 	if tmpl == nil {
 		t.Error("BuildTemplate returned nil template")
 	} else {
-		if tmpl.Name() != "myName" {
-			t.Errorf("Unexpected template name. Wanted %s but got %s", tmplName, tmpl.Name())
-		}
 		if tmpl.Lookup("success1") == nil {
 			t.Error("Template success1 was not found in template. Did you call parse files?")
 		}
@@ -48,7 +44,7 @@ func TestBuildTemplate_FuncMap(t *testing.T) {
 	})
 
 	files := rdr.PathToTemplateFiles("success1.tmpl", "success2.tmpl")
-	if _, err := rdr.BuildTemplate("some name", files...); err != nil {
+	if _, err := rdr.BuildTemplate(files...); err != nil {
 		t.Errorf("Unexpected error received %v. Did you call FuncMap?", err)
 	}
 }
@@ -57,7 +53,7 @@ func TestBuildTemplate_Errors(t *testing.T) {
 	rdr := renderer("", nil)
 
 	files := rdr.PathToTemplateFiles("fail.tmpl")
-	if _, err := rdr.BuildTemplate("some name", files...); err == nil {
+	if _, err := rdr.BuildTemplate(files...); err == nil {
 		t.Error("BuildTemplate was expected to return an error")
 	}
 }
@@ -73,7 +69,7 @@ func TestRenderTemplate(t *testing.T) {
 
 	files := rdr.PathToTemplateFiles("success1.tmpl", "success2.tmpl")
 
-	tmpl, err := rdr.BuildTemplate("some templates", files...)
+	tmpl, err := rdr.BuildTemplate(files...)
 	if err != nil {
 		t.Errorf("Unexpected error received %v", err)
 	}
@@ -95,7 +91,7 @@ func TestRenderTemplate_ErrorHandling(t *testing.T) {
 
 	files := rdr.PathToTemplateFiles("success1.tmpl", "success2.tmpl")
 
-	tmpl, err := rdr.BuildTemplate("some templates", files...)
+	tmpl, err := rdr.BuildTemplate(files...)
 	if err != nil {
 		t.Errorf("Unexpected error received when calling BuildTemplate %v", err)
 	}

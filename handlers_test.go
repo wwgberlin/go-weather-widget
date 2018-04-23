@@ -14,7 +14,7 @@ import (
 
 type (
 	rendererMock struct {
-		buildFunc  func(string, ...string) (*template.Template, error)
+		buildFunc  func(...string) (*template.Template, error)
 		renderFunc func(http.ResponseWriter, *template.Template, interface{}) error
 		pathFunc   func(s ...string) []string
 	}
@@ -27,8 +27,8 @@ func (f forcasterMock) Forecast(s string) (*weather.Conditions, error) {
 	return f.forecast(s)
 }
 
-func (rdr rendererMock) BuildTemplate(name string, dep ...string) (*template.Template, error) {
-	return rdr.buildFunc(name, dep...)
+func (rdr rendererMock) BuildTemplate(dep ...string) (*template.Template, error) {
+	return rdr.buildFunc(dep...)
 }
 
 func (rdr rendererMock) RenderTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) error {
@@ -54,12 +54,8 @@ func TestIndexHandler_BuildTemplate(t *testing.T) {
 			}
 			return []string{"path/a", "path/b", "path/c"}
 		},
-		buildFunc: func(name string, layouts ...string) (*template.Template, error) {
+		buildFunc: func(layouts ...string) (*template.Template, error) {
 			buildInvoked = true
-			if name != "index" {
-				t.Errorf(`Unexpected template name passed to BuildTemplate
-				Wanted 'index' but got '%s'`, name)
-			}
 
 			expectedTemplateLayouts := []string{"path/a", "path/b", "path/c"}
 
@@ -84,7 +80,7 @@ func TestIndexHandler_TestRender(t *testing.T) {
 
 	rdr := rendererMock{
 		pathFunc: func(layouts ...string) []string { return layouts },
-		buildFunc: func(name string, layouts ...string) (*template.Template, error) {
+		buildFunc: func(layouts ...string) (*template.Template, error) {
 			return myTmpl, nil
 		},
 		renderFunc: func(w http.ResponseWriter, tmpl *template.Template, i interface{}) error {
@@ -116,7 +112,7 @@ func TestIndexHandler_FailToBuildTemplate(t *testing.T) {
 
 		indexHandler(rendererMock{
 			pathFunc: func(s ...string) []string { return s },
-			buildFunc: func(s string, s2 ...string) (*template.Template, error) {
+			buildFunc: func(s2 ...string) (*template.Template, error) {
 				return nil, errors.New("some error")
 			},
 		})
@@ -133,7 +129,7 @@ func TestIndexHandler_FailToRenderTemplate(t *testing.T) {
 		pathFunc: func(s ...string) []string {
 			return s
 		},
-		buildFunc: func(s string, s2 ...string) (*template.Template, error) {
+		buildFunc: func(s2 ...string) (*template.Template, error) {
 			return nil, nil
 		},
 		renderFunc: func(http.ResponseWriter, *template.Template, interface{}) error {
@@ -169,12 +165,8 @@ func TestWidgetHandler_TestBuild(t *testing.T) {
 			}
 			return []string{"path/a", "path/b", "path/c"}
 		},
-		buildFunc: func(name string, layouts ...string) (*template.Template, error) {
+		buildFunc: func(layouts ...string) (*template.Template, error) {
 			buildInvoked = true
-			if name != "widget" {
-				t.Errorf(`Unexpected template name passed to BuildTemplate
-				Wanted 'widget' but got '%s'`, name)
-			}
 
 			expectedTemplateLayouts := []string{"path/a", "path/b", "path/c"}
 
@@ -209,7 +201,7 @@ func TestWidgetHandler_TestRender(t *testing.T) {
 	}
 	rdr := rendererMock{
 		pathFunc: func(layouts ...string) []string { return layouts },
-		buildFunc: func(name string, layouts ...string) (*template.Template, error) {
+		buildFunc: func(layouts ...string) (*template.Template, error) {
 			return myTmpl, nil
 		},
 		renderFunc: func(w http.ResponseWriter, tmpl *template.Template, v interface{}) error {
@@ -249,7 +241,7 @@ func TestWidgetHandler_FailToBuildTemplate(t *testing.T) {
 
 		widgetHandler(rendererMock{
 			pathFunc: func(s ...string) []string { return s },
-			buildFunc: func(s string, s2 ...string) (*template.Template, error) {
+			buildFunc: func(s2 ...string) (*template.Template, error) {
 				return nil, errors.New("some error")
 			},
 		}, forcasterMock{})
