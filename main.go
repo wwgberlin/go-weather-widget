@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/wwgberlin/go-weather-widget/tpl"
+	"github.com/wwgberlin/go-weather-widget/weather/worldweatheronline"
 )
 
 func main() {
@@ -21,13 +22,10 @@ func main() {
 		return
 	}
 
-	rdr := tpl.New(filepath.Join(getPath(), "templates"))
-	if err := rdr.RegisterTemplate("whoops.tmpl", "layouts/layout.tmpl", "layouts/head.tmpl"); err != nil {
-		panic(err)
-	}
+	rdr := tpl.NewRenderer(filepath.Join(getPath(), "templates"))
 
-	http.HandleFunc("/weather", weatherHandler(rdr, *apiKey))
 	http.HandleFunc("/", indexHandler(rdr))
+	http.HandleFunc("/weather", widgetHandler(rdr, worldweatheronline.New(*apiKey)))
 	http.Handle("/images/", http.StripPrefix("/", http.FileServer(http.Dir("./public/static"))))
 
 	log.Printf("Application serving on http://localhost:%s ...", *port)

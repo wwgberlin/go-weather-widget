@@ -19,8 +19,8 @@ func New(apiKey string) weather.Forecaster {
 	return weather.ForecasterFunc(getForecast(apiKey))
 }
 
-func getForecast(apiKey string) func(string) (weather.Conditions, error) {
-	return func(location string) (weather.Conditions, error) {
+func getForecast(apiKey string) func(string) (*weather.Conditions, error) {
+	return func(location string) (*weather.Conditions, error) {
 		params := request(location).encodeWithDefaults(apiKey)
 		res, resErr := http.Get(
 			fmt.Sprintf("%s/%s?%s", apiURL, weatherEndpoint, params),
@@ -39,6 +39,17 @@ func getForecast(apiKey string) func(string) (weather.Conditions, error) {
 		if unmarshalErr := json.Unmarshal(b, &response); unmarshalErr != nil {
 			return nil, unmarshalErr
 		}
-		return &response, nil
+
+		return buildResponse(&response), nil
 	}
+}
+
+func buildResponse(response *response) *weather.Conditions {
+	return &weather.Conditions{
+		Error:       response.Error(),
+		Celsius:     response.Celsius(),
+		Description: response.Description(),
+		Location:    response.Location(),
+	}
+
 }
