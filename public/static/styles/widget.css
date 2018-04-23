@@ -1,0 +1,65 @@
+div.base {
+	height: 200px;
+	width: 200px;
+	margin:0 auto;
+	background-size: 200px 200px;
+	background-image: url("/images/base_gopher.png");
+}
+
+div.base > div{
+	position: absolute;
+}
+
+div.boots{
+	height: 200px;
+	width: 200px;
+	background-size: 200px 200px;
+	background-image: url("/images/boots.png");
+}
+
+div.coat{
+	height: 200px;
+	width: 200px;
+	background-size: 200px 200px;
+	background-image: url("/images/coat.png");
+}
+div.sunglasses{
+	height: 200px;
+	width: 200px;
+	background-size: 200px 200px;
+	background-image: url("/images/sunglasses.png");
+}
+div.hat{
+	height: 200px;
+	width: 200px;
+	background-size: 200px 200px;
+	background-image: url("/images/hat.png");
+}
+div.tshirt{
+	height: 200px;
+	width: 200px;
+	background-size: 200px 200px;
+	background-image: url("/images/tshirt.png");
+}
+div.scarf{
+	height: 200px;
+	width: 200px;
+	background-size: 200px 200px;
+	background-image: url("/images/scarf.png");
+}
+div.winterhat{
+	height: 200px;
+	width: 200px;
+	background-size: 200px 200px;
+	background-image: url("/images/winterhat.png");
+}
+div.umbrella{
+	height: 200px;
+	width: 200px;
+	background-size: 200px 200px;
+	background-image: url("/images/umbrella.png");
+}
+
+.description{
+	text-align: center ;
+}
