@@ -25,7 +25,7 @@ func TestBuildTemplate(t *testing.T) {
 	tmpl, err := rdr.BuildTemplate(files...)
 
 	if err != nil {
-		t.Errorf("Unexpected error received %v", err)
+		t.Errorf("Unexpected error received: %v", err)
 	}
 	if tmpl == nil {
 		t.Error("BuildTemplate returned nil template")
@@ -45,7 +45,7 @@ func TestBuildTemplate_FuncMap(t *testing.T) {
 
 	files := rdr.PathToTemplateFiles("success1.tmpl", "success2.tmpl")
 	if _, err := rdr.BuildTemplate(files...); err != nil {
-		t.Errorf("Unexpected error received %v. Did you call FuncMap?", err)
+		t.Errorf("Unexpected error received: %v. Did you call FuncMap?", err)
 	}
 }
 
@@ -71,7 +71,7 @@ func TestRenderTemplate(t *testing.T) {
 
 	tmpl, err := rdr.BuildTemplate(files...)
 	if err != nil {
-		t.Errorf("Unexpected error received %v", err)
+		t.Errorf("Unexpected error received: %v", err)
 	}
 
 	rr := httptest.NewRecorder()
@@ -93,7 +93,7 @@ func TestRenderTemplate_ErrorHandling(t *testing.T) {
 
 	tmpl, err := rdr.BuildTemplate(files...)
 	if err != nil {
-		t.Errorf("Unexpected error received when calling BuildTemplate %v", err)
+		t.Errorf("Unexpected error received: %v", err)
 	}
 
 	rr := httptest.NewRecorder()

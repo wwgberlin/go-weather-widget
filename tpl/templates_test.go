@@ -192,8 +192,8 @@ func TestTemplateWidget(t *testing.T) {
 		t.Error("expected to render div with class 'base'")
 	} else {
 		gopherDiv := doc.Find("div.base")
-		if gopherDiv.Find(".fedora").Length() == 0 {
-			t.Error("gopher was expected to have a fedora")
+		if gopherDiv.Find(".crown").Length() == 0 {
+			t.Error("gopher was expected to have a crown")
 		}
 	}
 }
@@ -212,7 +212,7 @@ func myClothes(args ...interface{}) ([]string, error) {
 	} else if celsius != 25 {
 		return nil, errors.New("first argument in clothes was expected to be the weather celsius")
 	}
-	return []string{"fedora"}, nil
+	return []string{"crown"}, nil
 }
 
 func copyFuncMap(m map[string]interface{}) map[string]interface{} {
