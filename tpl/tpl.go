@@ -20,16 +20,18 @@ func NewRenderer(pathToTemplates string, helpers template.FuncMap, layoutName st
 	}
 }
 
-// BuildTemplate takes the name of the template and it's dependencies
-// make a slice of type string of size len(dependencies + 1)
-// initialize the first item of the slice with the path to the template
-// iterate over the dependencies and add the respective file names to the array
+// BuildTemplate attempts to build a new template with the given name,
+// given files and the helper functions in the renderer.
+// it returns the template or the error.
 func (r *Renderer) BuildTemplate(name string, files ...string) (*template.Template, error) {
+	//return nil, errors.New("not implemented")
 	return template.New(name).Funcs(r.helpers).ParseFiles(files...)
 }
 
+// RenderTemplate executes the provided template by the renderer's layout name
+// and returns the error if the execution fails.
 func (r *Renderer) RenderTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) error {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	//return errors.New("not implemented")
 	return tmpl.ExecuteTemplate(w, r.layoutName, data)
 }
 

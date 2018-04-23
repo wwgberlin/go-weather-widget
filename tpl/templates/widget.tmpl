@@ -1,5 +1,5 @@
 {{define "title"}}
-	Weather Forecast in {{.location}}
+	<title>Weather Forecast in {{.location}}</title>
 {{end}}
 
 {{define "content"}}
@@ -16,65 +16,7 @@
 {{end}}
 
 {{define "styles"}}
-<style>
-	div.base {
-		height: 200px;
-		width: 200px;
-		margin:0 auto;
-		background-size: 200px 200px;
-		background-image: url("/images/base_gopher.png");
-	}
-	div.boots{
-		height: 200px;
-		width: 200px;
-		background-size: 200px 200px;
-		background-image: url("/images/boots.png");
-	}
-	div.coat{
-		height: 200px;
-		width: 200px;
-		background-size: 200px 200px;
-		background-image: url("/images/coat.png");
-	}
-	div.sunglasses{
-		height: 200px;
-		width: 200px;
-		background-size: 200px 200px;
-		background-image: url("/images/sunglasses.png");
-	}
-	div.hat{
-		height: 200px;
-		width: 200px;
-		background-size: 200px 200px;
-		background-image: url("/images/hat.png");
-	}
-	div.tshirt{
-		height: 200px;
-		width: 200px;
-		background-size: 200px 200px;
-		background-image: url("/images/tshirt.png");
-	}
-	div.scarf{
-		height: 200px;
-		width: 200px;
-		background-size: 200px 200px;
-		background-image: url("/images/scarf.png");
-	}
-	div.winterhat{
-		height: 200px;
-		width: 200px;
-		background-size: 200px 200px;
-		background-image: url("/images/winterhat.png");
-	}
-
-	.description{
-		text-align: ;
-	}
-	.inner {
-		position: absolute;
-	}
-
-</style>
+	<link rel="stylesheet" href="styles/widget.css">
 {{end}}
 
 {{define "scripts"}}

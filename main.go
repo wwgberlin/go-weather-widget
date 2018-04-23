@@ -25,6 +25,7 @@ func main() {
 	http.HandleFunc("/", indexHandler(rdr))
 	http.HandleFunc("/weather", widgetHandler(rdr, worldweatheronline.New(*apiKey)))
 	http.Handle("/images/", http.StripPrefix("/", http.FileServer(http.Dir("./public/static"))))
+	http.Handle("/styles/", http.StripPrefix("/", http.FileServer(http.Dir("./public/static"))))
 
 	log.Printf("Application serving on http://localhost:%s ...", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", *port), nil))

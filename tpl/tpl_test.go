@@ -28,11 +28,15 @@ func TestBuildTemplate(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unexpected error received %v", err)
 	}
-	if tmpl.Name() != "myName" {
-		t.Errorf("Unexpected template name. Wanted %s but got %s", tmplName, tmpl.Name())
-	}
-	if tmpl.Lookup("success1") == nil {
-		t.Error("Template success1 was not found in template. Did you call parse files?")
+	if tmpl == nil {
+		t.Error("BuildTemplate returned nil template")
+	} else {
+		if tmpl.Name() != "myName" {
+			t.Errorf("Unexpected template name. Wanted %s but got %s", tmplName, tmpl.Name())
+		}
+		if tmpl.Lookup("success1") == nil {
+			t.Error("Template success1 was not found in template. Did you call parse files?")
+		}
 	}
 }
 
