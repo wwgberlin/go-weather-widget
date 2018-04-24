@@ -14,11 +14,15 @@ import (
 
 type (
 	rendererMock struct {
-		buildFunc  func(...string) (*template.Template, error)
-		renderFunc func(http.ResponseWriter, *template.Template, interface{}) error
-		pathFunc   func(s ...string) []string
+		buildInvoked  bool
+		renderInvoked bool
+		pathInvoked   bool
+		buildFunc     func(...string) (*template.Template, error)
+		renderFunc    func(http.ResponseWriter, *template.Template, interface{}) error
+		pathFunc      func(s ...string) []string
 	}
 	forcasterMock struct {
+		invoked  bool
 		forecast func(string) (*weather.Conditions, error)
 	}
 )
@@ -27,39 +31,38 @@ func (f forcasterMock) Forecast(s string) (*weather.Conditions, error) {
 	return f.forecast(s)
 }
 
-func (rdr rendererMock) BuildTemplate(dep ...string) (*template.Template, error) {
+func (rdr *rendererMock) BuildTemplate(dep ...string) (*template.Template, error) {
+	rdr.buildInvoked = true
 	return rdr.buildFunc(dep...)
 }
 
-func (rdr rendererMock) RenderTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) error {
+func (rdr *rendererMock) RenderTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) error {
+	rdr.renderInvoked = true
 	return rdr.renderFunc(w, tmpl, data)
 }
 
-func (rdr rendererMock) PathToTemplateFiles(s ...string) []string {
+func (rdr *rendererMock) PathToTemplateFiles(s ...string) []string {
+	rdr.pathInvoked = true
 	return rdr.pathFunc(s...)
 }
 
 func TestIndexHandler_BuildTemplate(t *testing.T) {
-	buildInvoked := false
+	expectedInputForPath := []string{
+		"index.tmpl",
+		"layouts/layout.tmpl",
+		"layouts/head.tmpl",
+	}
 
-	rdr := rendererMock{
+	expectedInputForBuild := []string{"path/a", "path/b", "path/c"}
+	rdr := &rendererMock{
 		pathFunc: func(layouts ...string) []string {
-			expectedTemplateLayouts := []string{
-				"index.tmpl",
-				"layouts/layout.tmpl",
-				"layouts/head.tmpl",
-			}
-			if err := checkTemplates(layouts, expectedTemplateLayouts); err != nil {
+			if err := checkTemplates(layouts, expectedInputForPath); err != nil {
 				t.Error(err)
 			}
-			return []string{"path/a", "path/b", "path/c"}
+			return expectedInputForBuild
 		},
 		buildFunc: func(layouts ...string) (*template.Template, error) {
-			buildInvoked = true
-
-			expectedTemplateLayouts := []string{"path/a", "path/b", "path/c"}
-
-			if err := checkTemplates(layouts, expectedTemplateLayouts); err != nil {
+			if err := checkTemplates(layouts, expectedInputForBuild); err != nil {
 				t.Error(err)
 			}
 			return template.New("some template"), nil
@@ -68,17 +71,24 @@ func TestIndexHandler_BuildTemplate(t *testing.T) {
 
 	indexHandler(rdr)
 
-	if !buildInvoked {
+	if !rdr.buildInvoked {
 		t.Error("BuildTemplated was expected to be called")
+	}
+	if !rdr.pathInvoked {
+		t.Error("PathToTemplateFiles was expected to be called")
 	}
 }
 
 func TestIndexHandler_TestRender(t *testing.T) {
+	const (
+		expectedResult = "all good"
+	)
+
 	myTmpl := template.New("some template")
 	req := httpGetRequest("some_path")
 	rr := httptest.NewRecorder()
 
-	rdr := rendererMock{
+	rdr := &rendererMock{
 		pathFunc: func(layouts ...string) []string { return layouts },
 		buildFunc: func(layouts ...string) (*template.Template, error) {
 			return myTmpl, nil
@@ -88,7 +98,7 @@ func TestIndexHandler_TestRender(t *testing.T) {
 				t.Errorf("Unexpected argument in call to RenderTemplate. Wanted template %s got %s", myTmpl.Name(), tmpl.Name())
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("all good"))
+			w.Write([]byte(expectedResult))
 			return nil
 		},
 	}
@@ -96,7 +106,7 @@ func TestIndexHandler_TestRender(t *testing.T) {
 	http.HandlerFunc(indexHandler(rdr)).ServeHTTP(rr, req)
 
 	if err := checkResponse(rr.Code, http.StatusOK,
-		rr.Body.String(), "all good"); err != nil {
+		rr.Body.String(), expectedResult); err != nil {
 		t.Error(err.Error())
 	}
 }
@@ -110,7 +120,7 @@ func TestIndexHandler_FailToBuildTemplate(t *testing.T) {
 			}
 		}()
 
-		indexHandler(rendererMock{
+		indexHandler(&rendererMock{
 			pathFunc: func(s ...string) []string { return s },
 			buildFunc: func(s2 ...string) (*template.Template, error) {
 				return nil, errors.New("some error")
@@ -123,9 +133,11 @@ func TestIndexHandler_FailToBuildTemplate(t *testing.T) {
 }
 
 func TestIndexHandler_FailToRenderTemplate(t *testing.T) {
+	const errMsg = "some error occurred"
+
 	req := httpGetRequest("some_path")
 	rr := httptest.NewRecorder()
-	rdr := rendererMock{
+	rdr := &rendererMock{
 		pathFunc: func(s ...string) []string {
 			return s
 		},
@@ -133,7 +145,7 @@ func TestIndexHandler_FailToRenderTemplate(t *testing.T) {
 			return nil, nil
 		},
 		renderFunc: func(http.ResponseWriter, *template.Template, interface{}) error {
-			return errors.New("some error occurred")
+			return errors.New(errMsg)
 		},
 	}
 
@@ -144,33 +156,30 @@ func TestIndexHandler_FailToRenderTemplate(t *testing.T) {
 		rr.Code,
 		http.StatusInternalServerError,
 		body,
-		"some error occurred",
+		errMsg,
 	); err != nil {
 		t.Error(err.Error())
 	}
 }
 
 func TestWidgetHandler_TestBuild(t *testing.T) {
-	buildInvoked := false
+	expectedInputForPath := []string{
+		"widget.tmpl",
+		"layouts/layout.tmpl",
+		"layouts/head.tmpl",
+	}
 
-	rdr := rendererMock{
+	expectedInputForBuild := []string{"path/a", "path/b", "path/c"}
+
+	rdr := &rendererMock{
 		pathFunc: func(layouts ...string) []string {
-			expectedTemplateLayouts := []string{
-				"widget.tmpl",
-				"layouts/layout.tmpl",
-				"layouts/head.tmpl",
-			}
-			if err := checkTemplates(layouts, expectedTemplateLayouts); err != nil {
+			if err := checkTemplates(layouts, expectedInputForPath); err != nil {
 				t.Error(err)
 			}
-			return []string{"path/a", "path/b", "path/c"}
+			return expectedInputForBuild
 		},
 		buildFunc: func(layouts ...string) (*template.Template, error) {
-			buildInvoked = true
-
-			expectedTemplateLayouts := []string{"path/a", "path/b", "path/c"}
-
-			if err := checkTemplates(layouts, expectedTemplateLayouts); err != nil {
+			if err := checkTemplates(layouts, expectedInputForBuild); err != nil {
 				t.Error(err)
 			}
 			return template.New("some template"), nil
@@ -179,34 +188,46 @@ func TestWidgetHandler_TestBuild(t *testing.T) {
 
 	widgetHandler(rdr, forcasterMock{})
 
-	if !buildInvoked {
+	if !rdr.pathInvoked {
+		t.Error("PathToTemplateFiles was expected to be called")
+	}
+	if !rdr.buildInvoked {
 		t.Error("BuildTemplated was expected to be called")
 	}
 }
 
 func TestWidgetHandler_TestRender(t *testing.T) {
+	const (
+		queryLocation  = "myLocation"
+		expectedResult = "all good"
+	)
+
 	myTmpl := template.New("some template")
-	req := httpGetRequest("?location=myLocation")
+	req := httpGetRequest(fmt.Sprintf("?location=%s", queryLocation))
 	rr := httptest.NewRecorder()
 
-	conditions := setupConditions()
+	conditions := weather.Conditions{
+		Location:    "API resolved location",
+		Description: "description",
+		Celsius:     5,
+	}
 
 	forecaster := forcasterMock{
 		forecast: func(s string) (*weather.Conditions, error) {
-			if s != "myLocation" {
-				t.Errorf("Unexpected argument in call to Forecast")
+			if s != queryLocation {
+				t.Errorf("Unexpected argument in call to Forecast. Wanted %s but got %s", queryLocation, s)
 			}
 			return &conditions, nil
 		},
 	}
-	rdr := rendererMock{
+	rdr := &rendererMock{
 		pathFunc: func(layouts ...string) []string { return layouts },
 		buildFunc: func(layouts ...string) (*template.Template, error) {
 			return myTmpl, nil
 		},
 		renderFunc: func(w http.ResponseWriter, tmpl *template.Template, v interface{}) error {
 			if tmpl != myTmpl {
-				t.Errorf("Unexpected argument in call to RenderTemplate. Wanted template %s got %s", myTmpl.Name(), tmpl.Name())
+				t.Errorf("Unexpected argument in call to RenderTemplate. Wanted template '%s' got '%s'", myTmpl.Name(), tmpl.Name())
 			}
 
 			if m, ok := v.(map[string]interface{}); !ok {
@@ -217,7 +238,7 @@ func TestWidgetHandler_TestRender(t *testing.T) {
 				}
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("all good"))
+			w.Write([]byte(expectedResult))
 			return nil
 		},
 	}
@@ -225,7 +246,7 @@ func TestWidgetHandler_TestRender(t *testing.T) {
 	http.HandlerFunc(widgetHandler(rdr, forecaster)).ServeHTTP(rr, req)
 
 	if err := checkResponse(rr.Code, http.StatusOK,
-		rr.Body.String(), "all good"); err != nil {
+		rr.Body.String(), expectedResult); err != nil {
 		t.Error(err.Error())
 	}
 }
@@ -239,7 +260,7 @@ func TestWidgetHandler_FailToBuildTemplate(t *testing.T) {
 			}
 		}()
 
-		widgetHandler(rendererMock{
+		widgetHandler(&rendererMock{
 			pathFunc: func(s ...string) []string { return s },
 			buildFunc: func(s2 ...string) (*template.Template, error) {
 				return nil, errors.New("some error")
@@ -263,7 +284,7 @@ func checkTemplates(layouts, expectedLayouts []string) error {
 	if !reflect.DeepEqual(expectedLayouts, layouts) {
 		return fmt.Errorf(`
 				Unexpected arguments in call to BuildTemplate. 
-				wanted: %v received %v`,
+				wanted: '%v' received '%v'`,
 			expectedLayouts,
 			layouts,
 		)
@@ -284,14 +305,6 @@ func checkResponse(code, expectedCode int, body, expectedBody string) error {
 	return nil
 }
 
-func setupConditions() weather.Conditions {
-	return weather.Conditions{
-		Location:    "some location",
-		Description: "description",
-		Celsius:     5,
-	}
-}
-
 func checkMapFields(conditions weather.Conditions, m map[string]interface{}) error {
 	expected := map[string]interface{}{
 		"location":    conditions.Location,
@@ -300,7 +313,7 @@ func checkMapFields(conditions weather.Conditions, m map[string]interface{}) err
 	}
 
 	if !reflect.DeepEqual(expected, m) {
-		return fmt.Errorf("unexpected arguments in call to RenderTemplate. Wanted %v but got %v", expected, m)
+		return fmt.Errorf("unexpected arguments in call to RenderTemplate. Wanted '%v' but got '%v'", expected, m)
 	}
 	return nil
 }

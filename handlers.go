@@ -41,17 +41,20 @@ func indexHandler(rdr renderer) func(w http.ResponseWriter, r *http.Request) {
 // WidgetHandler receives a renderer and a forecaster and returns a function
 // with the http.HandleFunc signature.
 //
-// Similarly to indexHandler above, instantiate your template in the enclosing function,
-// but replace index.tmpl with widget.tmpl use panic to prevent the app from
-// starting with invalid template files.
+// Similarly to indexHandler above, instantiate your template with the
+// template files in the enclosing function (but replace index.tmpl with
+// widget.tmpl).
+// Use panic to prevent the app from starting with invalid template files.
 //
-// The forecaster has a function Forecast that receives a location (string)
+// The forecaster provides a function Forecast that receives a location (string)
 // and returns weather.Conditions object with the fields:
 // Description, Location, Celsius
 //
-// Call Forecast with your request param - r.URL.Query().Get("location")
-// Instantiate a map[string]interface{} and add the data from the Conditions
-// to the map (use lower case) e.g. m["location"] = c.Location
+// Call forcaster.Forecast with your request param -
+// r.URL.Query().Get("location")
+// Instantiate a map[string]interface{} to pass to template execution
+// and add the data from the Conditions to the map (use lower case)
+// e.g. m["location"] = c.Location, etc.
 
 func widgetHandler(rdr renderer, forecaster forcaster) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"html/template"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -12,18 +11,18 @@ import (
 )
 
 func TestTemplateLayout(t *testing.T) {
+	var b bytes.Buffer
 	tmpl, err := template.ParseFiles("./templates/layouts/layout.tmpl")
 
 	if err != nil {
 		t.Fatalf("layout.tmpl was expected to parse without any errors. %v", err)
 	}
 
-	rr := httptest.NewRecorder()
-	if err = tmpl.ExecuteTemplate(rr, "layout", "some data"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, "layout", "some data"); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
 
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(rr.Body.Bytes()))
+	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if body := doc.Find("html body"); body.Length() == 0 {
 		t.Error("Expected to render html and body elements")
@@ -43,6 +42,7 @@ func TestTemplateLayout(t *testing.T) {
 }
 
 func TestLayoutWithHead(t *testing.T) {
+	var b bytes.Buffer
 	tmpl, err := template.ParseFiles("./templates/layouts/layout.tmpl")
 
 	if err != nil {
@@ -51,11 +51,10 @@ func TestLayoutWithHead(t *testing.T) {
 
 	tmpl, err = tmpl.Parse(`{{define "head"}}<head><title>{{.}}</title></head>{{end}}`)
 
-	rr := httptest.NewRecorder()
-	if err = tmpl.ExecuteTemplate(rr, "layout", "TITLE"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, "layout", "TITLE"); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(rr.Body.Bytes()))
+	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if title := doc.Find("title"); title.Length() == 0 {
 		t.Error("Expected to render title element")
@@ -65,6 +64,7 @@ func TestLayoutWithHead(t *testing.T) {
 }
 
 func TestLayoutWithContent(t *testing.T) {
+	var b bytes.Buffer
 	tmpl, err := template.ParseFiles("./templates/layouts/layout.tmpl")
 
 	if err != nil {
@@ -73,11 +73,10 @@ func TestLayoutWithContent(t *testing.T) {
 
 	tmpl, err = tmpl.Parse(`{{define "content"}}{{.}}{{end}}`)
 
-	rr := httptest.NewRecorder()
-	if err = tmpl.ExecuteTemplate(rr, "layout", "content"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, "layout", "content"); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(rr.Body.Bytes()))
+	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if body := doc.Find("body"); body.Length() == 0 {
 		t.Error("Expected to render title element")
@@ -87,6 +86,7 @@ func TestLayoutWithContent(t *testing.T) {
 }
 
 func TestTemplateHead(t *testing.T) {
+	var b bytes.Buffer
 	tmpl, err := template.ParseFiles("./templates/layouts/head.tmpl")
 	if err != nil {
 		t.Fatalf("head.tmpl was expected to parse without any errors. %v", err)
@@ -100,12 +100,11 @@ func TestTemplateHead(t *testing.T) {
 		t.Error("head.tmpl was expected to define empty template title")
 	}
 
-	rr := httptest.NewRecorder()
-	if err = tmpl.ExecuteTemplate(rr, "head", nil); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, "head", nil); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
 
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(rr.Body.Bytes()))
+	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if head := doc.Find("head"); head.Length() == 0 {
 		t.Error("Expected to render title element")
@@ -113,6 +112,7 @@ func TestTemplateHead(t *testing.T) {
 }
 
 func TestTemplatesHeadWithTitle(t *testing.T) {
+	var b bytes.Buffer
 	tmpl, err := template.ParseFiles("./templates/layouts/head.tmpl")
 
 	if err != nil {
@@ -121,12 +121,11 @@ func TestTemplatesHeadWithTitle(t *testing.T) {
 
 	tmpl, err = tmpl.Parse(`{{define "title"}}<title>{{.}}</title>{{end}}`)
 
-	rr := httptest.NewRecorder()
-	if tmpl.ExecuteTemplate(rr, "head", "some_title"); err != nil {
+	if tmpl.ExecuteTemplate(&b, "head", "some_title"); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
 
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(rr.Body.Bytes()))
+	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if head := doc.Find("head"); head.Length() == 0 {
 		t.Error("Expected to render title element")
@@ -137,6 +136,7 @@ func TestTemplatesHeadWithTitle(t *testing.T) {
 }
 
 func TestTemplatesHeadWithStyles(t *testing.T) {
+	var b bytes.Buffer
 	tmpl, err := template.ParseFiles("./templates/layouts/head.tmpl")
 
 	if err != nil {
@@ -145,11 +145,10 @@ func TestTemplatesHeadWithStyles(t *testing.T) {
 
 	tmpl, err = tmpl.Parse(`{{define "styles"}}<link rel={{.}}/>{{end}}`)
 
-	rr := httptest.NewRecorder()
-	if err = tmpl.ExecuteTemplate(rr, "head", "some_link"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, "head", "some_link"); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(rr.Body.Bytes()))
+	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if head := doc.Find("head"); head.Length() == 0 {
 		t.Error("Expected to render title element")
@@ -159,8 +158,9 @@ func TestTemplatesHeadWithStyles(t *testing.T) {
 }
 
 func TestTemplateWidget(t *testing.T) {
+	var b bytes.Buffer
 	h := copyFuncMap(Helpers)
-	h["clothes"] = myClothes
+	h["clothes"] = myClothes("crown", "cape")
 
 	tmpl := template.New("widget").Funcs(h)
 	tmpl, err := tmpl.ParseFiles("./templates/widget.tmpl")
@@ -177,9 +177,7 @@ func TestTemplateWidget(t *testing.T) {
 		t.Error("widget.tmpl was expected to define template styles")
 	}
 
-	rr := httptest.NewRecorder()
-
-	if err = tmpl.ExecuteTemplate(rr, "content", map[string]interface{}{
+	if err = tmpl.ExecuteTemplate(&b, "content", map[string]interface{}{
 		"location":    "Berlin",
 		"description": "It's spring time",
 		"celsius":     25,
@@ -187,32 +185,37 @@ func TestTemplateWidget(t *testing.T) {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
 
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(rr.Body.Bytes()))
-	if doc.Find("div.base").Length() == 0 {
-		t.Error("expected to render div with class 'base'")
+	doc, err := goquery.NewDocumentFromReader(&b)
+	if doc.Find("div.gopher").Length() == 0 {
+		t.Error("expected to render div with class 'gopher'")
 	} else {
-		gopherDiv := doc.Find("div.base")
+		gopherDiv := doc.Find("div.gopher")
 		if gopherDiv.Find(".crown").Length() == 0 {
-			t.Error("gopher was expected to have a crown")
+			t.Error("gopher was expected to wear a crown")
+		}
+		if gopherDiv.Find(".cape").Length() == 0 {
+			t.Error("gopher was expected to wear a cape")
 		}
 	}
 }
 
-func myClothes(args ...interface{}) ([]string, error) {
-	if len(args) < 2 {
-		return nil, errors.New("clothe expects 2 arguments to be passed (description, celsius)")
+func myClothes(ret ...string) func(args ...interface{}) ([]string, error) {
+	return func(args ...interface{}) ([]string, error) {
+		if len(args) < 2 {
+			return nil, errors.New("clothe expects 2 arguments to be passed (description, celsius)")
+		}
+		if desc, ok := args[0].(string); !ok {
+			return nil, errors.New("first argument in clothes was expected to be a string (description)")
+		} else if desc != "It's spring time" {
+			return nil, errors.New("first argument in clothes was expected to be the weather description")
+		}
+		if celsius, ok := args[1].(int); !ok {
+			return nil, errors.New("second argument in clothes was expected to be an integer (celsius)")
+		} else if celsius != 25 {
+			return nil, errors.New("first argument in clothes was expected to be the weather celsius")
+		}
+		return ret, nil
 	}
-	if desc, ok := args[0].(string); !ok {
-		return nil, errors.New("first argument in clothes was expected to be a string (description)")
-	} else if desc != "It's spring time" {
-		return nil, errors.New("first argument in clothes was expected to be the weather description")
-	}
-	if celsius, ok := args[1].(int); !ok {
-		return nil, errors.New("second argument in clothes was expected to be an integer (celsius)")
-	} else if celsius != 25 {
-		return nil, errors.New("first argument in clothes was expected to be the weather celsius")
-	}
-	return []string{"crown"}, nil
 }
 
 func copyFuncMap(m map[string]interface{}) map[string]interface{} {

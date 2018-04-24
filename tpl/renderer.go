@@ -27,8 +27,8 @@ func (r *Renderer) BuildTemplate(files ...string) (*template.Template, error) {
 	return nil, errors.New("not implemented")
 }
 
-// RenderTemplate executes the provided template by the renderer's layout name
-// and returns the error if the execution fails.
+// RenderTemplate executes the provided template and returns the error
+// if the execution fails.
 func (r *Renderer) RenderTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) error {
 	return errors.New("not implemented")
 }
