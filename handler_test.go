@@ -60,7 +60,7 @@ func TestIndexHandler_BuildTemplate(t *testing.T) {
 	indexHandler("my/path/", rdr)
 
 	if !rdr.buildInvoked {
-		t.Error("BuildTemplated was expected to be called")
+		t.Error("BuildTemplate was expected to be called")
 	}
 }
 
@@ -140,7 +140,7 @@ func TestWidgetHandler_TestBuild(t *testing.T) {
 	widgetHandler("my/path/", rdr, forecasterMock{})
 
 	if !rdr.buildInvoked {
-		t.Error("BuildTemplated was expected to be called")
+		t.Error("BuildTemplate was expected to be called")
 	}
 }
 
@@ -194,6 +194,69 @@ func TestWidgetHandler_TestRender(t *testing.T) {
 	if err := checkResponse(rr.Code, http.StatusOK,
 		rr.Body.String(), expectedResult); err != nil {
 		t.Error(strings.Title(err.Error()))
+	}
+}
+
+func TestWidgetHandler_FailToForecast(t *testing.T) {
+	const (
+		queryLocation = "myLocation"
+		expectedError = "some error"
+	)
+
+	myTmpl := template.New("some template")
+	req := httpGetRequest(fmt.Sprintf("?location=%s", queryLocation))
+	rr := httptest.NewRecorder()
+
+	forecaster := forecasterMock{
+		forecast: func(s string) (*weather.Conditions, error) {
+			return nil, errors.New(expectedError)
+		},
+	}
+
+	rdr := &rendererMock{
+		buildFunc: func(layouts ...string) *template.Template {
+			return myTmpl
+		},
+	}
+
+	http.HandlerFunc(widgetHandler("", rdr, forecaster)).ServeHTTP(rr, req)
+
+	body := strings.TrimSpace(rr.Body.String())
+	if err := checkResponse(rr.Code, http.StatusInternalServerError,
+		body, expectedError); err != nil {
+		t.Error(err.Error())
+	}
+}
+
+func TestWidgetHandler_FailToRenderTemplate(t *testing.T) {
+	const (
+		queryLocation = "myLocation"
+		expectedError = "some error"
+	)
+
+	req := httpGetRequest(fmt.Sprintf("?location=%s", queryLocation))
+	rr := httptest.NewRecorder()
+
+	forecaster := forecasterMock{
+		forecast: func(s string) (*weather.Conditions, error) {
+			return &weather.Conditions{}, nil
+		},
+	}
+
+	rdr := &rendererMock{
+		buildFunc: func(layouts ...string) *template.Template {
+			return template.New("some template")
+		},
+		renderFunc: func(io.Writer, *template.Template, interface{}) error {
+			return errors.New(expectedError)
+		},
+	}
+
+	http.HandlerFunc(widgetHandler("", rdr, forecaster)).ServeHTTP(rr, req)
+	body := strings.TrimSpace(rr.Body.String())
+	if err := checkResponse(rr.Code, http.StatusInternalServerError,
+		body, expectedError); err != nil {
+		t.Error(err.Error())
 	}
 }
 
