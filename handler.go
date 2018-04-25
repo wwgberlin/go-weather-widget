@@ -21,12 +21,9 @@ type (
 )
 
 func indexHandler(layoutsPath string, rdr renderer) func(w http.ResponseWriter, r *http.Request) {
-	var (
-		tmpl *template.Template
-	)
 	files := pathToTemplateFiles(layoutsPath, "index.tmpl", "layouts/layout.tmpl", "layouts/head.tmpl")
 
-	tmpl = rdr.BuildTemplate(files...)
+	tmpl := rdr.BuildTemplate(files...)
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		queryStr := r.URL.Query().Get("location")
