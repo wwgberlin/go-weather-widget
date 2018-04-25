@@ -34,7 +34,7 @@ Head:
 	
 #### Now let's look at our weather widget at templates/widget.tmpl
 There's a comment inside where your implementation should go.
-Your task here is to register the function clothes in the helpers FuncMap and call it with the descriptiona and the celsius values. Range over the returned values and for each render a <div/> element with each of the clothings.
+Your task here is to register the function clothes in the helpers FuncMap and call it with the description and the celsius values. Range over the returned values and for each render a `<div/>` element with a class of the respective clothing piece.
 
 #### Now let's imeplement our renderer (tpl/renderer.go)
 1. Implement BuildTemplate according to instructions
