@@ -4,22 +4,27 @@ import (
 	"errors"
 	"html/template"
 	"io"
+	"strings"
 )
 
-type LayoutRenderer struct {
-	helpers    template.FuncMap
-	layoutName string
+var DefaultHelpers = template.FuncMap{
+	"title": strings.Title,
 }
 
-func NewRenderer(helpers template.FuncMap, layoutName string) *LayoutRenderer {
+type LayoutRenderer struct {
+	Helpers    template.FuncMap
+	LayoutName string
+}
+
+func NewRenderer(layoutName string) *LayoutRenderer {
 	return &LayoutRenderer{
-		helpers:    helpers,
-		layoutName: layoutName,
+		Helpers:    DefaultHelpers,
+		LayoutName: layoutName,
 	}
 }
 
-// BuildTemplate attempts to build a new template given the layoutName,
-// the helpers FuncMap defined in the renderer, and parses the files.
+// BuildTemplate attempts to build a new template given the LayoutName,
+// the Helpers FuncMap defined in the renderer, and parses the files.
 // Use template.Must to panic if parse fails.
 func (r *LayoutRenderer) BuildTemplate(files ...string) *template.Template {
 	return nil

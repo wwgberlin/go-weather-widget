@@ -38,7 +38,7 @@ func main() {
 		return
 	}
 
-	rdr := tpl.NewRenderer(tpl.Helpers, layoutTemplateName)
+	rdr := tpl.NewRenderer(layoutTemplateName)
 
 	http.HandleFunc("/", indexHandler(layoutsPath, rdr))
 	http.HandleFunc("/weather", widgetHandler(layoutsPath, rdr, worldweatheronline.New(*apiKey)))

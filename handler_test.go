@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/wwgberlin/go-weather-widget/weather"
@@ -89,7 +90,7 @@ func TestIndexHandler_TestRender(t *testing.T) {
 
 	if err := checkResponse(rr.Code, http.StatusOK,
 		rr.Body.String(), expectedResult); err != nil {
-		t.Error(err.Error())
+		t.Error(strings.Title(err.Error()))
 	}
 }
 
@@ -116,7 +117,7 @@ func TestIndexHandler_FailToRenderTemplate(t *testing.T) {
 		body,
 		errMsg,
 	); err != nil {
-		t.Error(err.Error())
+		t.Error(strings.Title(err.Error()))
 	}
 }
 
@@ -192,7 +193,7 @@ func TestWidgetHandler_TestRender(t *testing.T) {
 
 	if err := checkResponse(rr.Code, http.StatusOK,
 		rr.Body.String(), expectedResult); err != nil {
-		t.Error(err.Error())
+		t.Error(strings.Title(err.Error()))
 	}
 }
 

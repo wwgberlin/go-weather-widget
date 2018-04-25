@@ -7,18 +7,21 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/wwgberlin/go-weather-widget/tpl"
+	. "github.com/wwgberlin/go-weather-widget/tpl"
 )
 
-func renderer(layoutName string, helpers *template.FuncMap) (rdr *tpl.LayoutRenderer) {
+func testRenderer(layoutName string, helpers template.FuncMap) (rdr *LayoutRenderer) {
 	if helpers == nil {
-		helpers = &tpl.Helpers
+		helpers = DefaultHelpers
 	}
-	return tpl.NewRenderer(*helpers, layoutName)
+	return &LayoutRenderer{
+		Helpers:    helpers,
+		LayoutName: layoutName,
+	}
 }
 
 func TestBuildTemplate(t *testing.T) {
-	rdr := renderer("layout", nil)
+	rdr := testRenderer("layout", nil)
 
 	tmpl := rdr.BuildTemplate("./test/success1.tmpl")
 
@@ -32,26 +35,25 @@ func TestBuildTemplate(t *testing.T) {
 }
 
 func TestBuildTemplate_FuncMap(t *testing.T) {
-	rdr := renderer("doesn't matter", &template.FuncMap{
+	rdr := testRenderer("doesn't matter", template.FuncMap{
 		"defined": func(v interface{}) interface{} {
 			return v
 		},
 	})
 
 	files := []string{"./test/success1.tmpl", "./test/success2.tmpl"}
-	recovered := false
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				recovered = true
+				t.Fatal("BuildTemplate was not expected to panic. Did you call Funcs()?")
 			}
-			rdr.BuildTemplate(files...)
 		}()
+		rdr.BuildTemplate(files...)
 	}()
 }
 
 func TestBuildTemplate_Errors(t *testing.T) {
-	rdr := renderer("doesn't matter", nil)
+	rdr := testRenderer("doesn't matter", nil)
 
 	recovered := false
 	func() {
@@ -72,7 +74,7 @@ func TestRenderTemplate(t *testing.T) {
 	var b bytes.Buffer
 	const expected = "SOME TEXT"
 
-	rdr := renderer("success1", &template.FuncMap{
+	rdr := testRenderer("success1", template.FuncMap{
 		"defined": func(v interface{}) interface{} {
 			return v
 		},
@@ -80,10 +82,12 @@ func TestRenderTemplate(t *testing.T) {
 
 	files := []string{"./test/success1.tmpl", "./test/success2.tmpl"}
 	tmpl := rdr.BuildTemplate(files...)
-	rdr.RenderTemplate(&b, tmpl, expected)
+
+	if err := rdr.RenderTemplate(&b, tmpl, expected); err != nil {
+		t.Fatalf("RenderTemplate was expected to succeed without errors. %v", err)
+	}
 
 	res := strings.TrimSpace(b.String())
-
 	if res != expected {
 		t.Errorf("Expected to render '%s' but received '%s'", expected, res)
 	}
@@ -92,7 +96,7 @@ func TestRenderTemplate(t *testing.T) {
 func TestRenderTemplate_ErrorHandling(t *testing.T) {
 	var b bytes.Buffer
 
-	rdr := renderer("success1", &template.FuncMap{
+	rdr := testRenderer("success1", template.FuncMap{
 		"defined": func(v interface{}) (interface{}, error) {
 			return nil, errors.New("some error")
 		},
