@@ -1,32 +1,27 @@
 package tpl_test
 
 import (
+	"bytes"
 	"errors"
 	"html/template"
-	"net/http/httptest"
-	"reflect"
-	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/wwgberlin/go-weather-widget/tpl"
 )
 
-func renderer(layoutName string, helpers *template.FuncMap) (rdr *tpl.Renderer) {
+func renderer(layoutName string, helpers *template.FuncMap) (rdr *tpl.LayoutRenderer) {
 	if helpers == nil {
 		helpers = &tpl.Helpers
 	}
-	return tpl.NewRenderer("./test", *helpers, layoutName)
+	return tpl.NewRenderer(*helpers, layoutName)
 }
 
 func TestBuildTemplate(t *testing.T) {
 	rdr := renderer("layout", nil)
 
-	files := rdr.PathToTemplateFiles("success1.tmpl")
-	tmpl, err := rdr.BuildTemplate(files...)
+	tmpl := rdr.BuildTemplate("./test/success1.tmpl")
 
-	if err != nil {
-		t.Errorf("Unexpected error received: %v", err)
-	}
 	if tmpl == nil {
 		t.Error("BuildTemplate returned nil template")
 	} else {
@@ -37,78 +32,77 @@ func TestBuildTemplate(t *testing.T) {
 }
 
 func TestBuildTemplate_FuncMap(t *testing.T) {
-	rdr := renderer("", &template.FuncMap{
+	rdr := renderer("doesn't matter", &template.FuncMap{
 		"defined": func(v interface{}) interface{} {
 			return v
 		},
 	})
 
-	files := rdr.PathToTemplateFiles("success1.tmpl", "success2.tmpl")
-	if _, err := rdr.BuildTemplate(files...); err != nil {
-		t.Errorf("Unexpected error received: %v. Did you pass the helpers to Funcs?", err)
-	}
+	files := []string{"./test/success1.tmpl", "./test/success2.tmpl"}
+	recovered := false
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				recovered = true
+			}
+			rdr.BuildTemplate(files...)
+		}()
+	}()
 }
 
 func TestBuildTemplate_Errors(t *testing.T) {
-	rdr := renderer("", nil)
+	rdr := renderer("doesn't matter", nil)
 
-	files := rdr.PathToTemplateFiles("fail.tmpl")
-	if _, err := rdr.BuildTemplate(files...); err == nil {
-		t.Error("BuildTemplate was expected to return an error")
+	recovered := false
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				recovered = true
+			}
+		}()
+		rdr.BuildTemplate("./test/fail.tmpl")
+	}()
+
+	if !recovered {
+		t.Error("BuildTemplate was expected to panic")
 	}
 }
 
-var expected = regexp.MustCompile("SOME TEXT\\s+1")
-
 func TestRenderTemplate(t *testing.T) {
+	var b bytes.Buffer
+	const expected = "SOME TEXT"
+
 	rdr := renderer("success1", &template.FuncMap{
 		"defined": func(v interface{}) interface{} {
 			return v
 		},
 	})
 
-	files := rdr.PathToTemplateFiles("success1.tmpl", "success2.tmpl")
+	files := []string{"./test/success1.tmpl", "./test/success2.tmpl"}
+	tmpl := rdr.BuildTemplate(files...)
+	rdr.RenderTemplate(&b, tmpl, expected)
 
-	tmpl, err := rdr.BuildTemplate(files...)
-	if err != nil {
-		t.Errorf("Unexpected error received: %v", err)
-	}
+	res := strings.TrimSpace(b.String())
 
-	rr := httptest.NewRecorder()
-	rdr.RenderTemplate(rr, tmpl, 1)
-
-	if !expected.Match(rr.Body.Bytes()) {
-		t.Errorf("%s expected ", rr.Body.String())
+	if res != expected {
+		t.Errorf("Expected to render '%s' but received '%s'", expected, res)
 	}
 }
 
 func TestRenderTemplate_ErrorHandling(t *testing.T) {
+	var b bytes.Buffer
+
 	rdr := renderer("success1", &template.FuncMap{
 		"defined": func(v interface{}) (interface{}, error) {
 			return nil, errors.New("some error")
 		},
 	})
 
-	files := rdr.PathToTemplateFiles("success1.tmpl", "success2.tmpl")
+	files := []string{"./test/success1.tmpl", "./test/success2.tmpl"}
 
-	tmpl, err := rdr.BuildTemplate(files...)
-	if err != nil {
-		t.Errorf("Unexpected error received: %v", err)
-	}
+	tmpl := rdr.BuildTemplate(files...)
 
-	rr := httptest.NewRecorder()
-	err = rdr.RenderTemplate(rr, tmpl, 1)
-
-	if err == nil {
+	if err := rdr.RenderTemplate(&b, tmpl, 1); err == nil {
 		t.Error("RenderTemplate was expected to return an error")
-	}
-}
-
-func TestPathToTemplateFiles(t *testing.T) {
-	rdr := tpl.NewRenderer("some_path", nil, "")
-	expected := []string{"some_path/a", "some_path/b"}
-	returned := rdr.PathToTemplateFiles("a", "b")
-	if !reflect.DeepEqual(expected, returned) {
-		t.Errorf("PathToTemplateFiles returned incorrect result. Wanted %v but got %v", expected, returned)
 	}
 }

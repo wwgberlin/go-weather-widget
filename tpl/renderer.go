@@ -1,43 +1,31 @@
 package tpl
 
 import (
-	"errors"
 	"html/template"
-	"net/http"
-	"path/filepath"
+	"io"
 )
 
-type Renderer struct {
-	path       string
+type LayoutRenderer struct {
 	helpers    template.FuncMap
 	layoutName string
 }
 
-func NewRenderer(pathToTemplates string, helpers template.FuncMap, layoutName string) *Renderer {
-	return &Renderer{
-		path:       pathToTemplates,
+func NewRenderer(helpers template.FuncMap, layoutName string) *LayoutRenderer {
+	return &LayoutRenderer{
 		helpers:    helpers,
 		layoutName: layoutName,
 	}
 }
 
 // BuildTemplate attempts to build a new template given the layoutName,
-// the helpers FuncMap defined in the renderer, and parses the files
-func (r *Renderer) BuildTemplate(files ...string) (*template.Template, error) {
-	return nil, errors.New("not implemented")
+// the helpers FuncMap defined in the renderer, and parses the files.
+// Use template.Must to panic if parse fails.
+func (r *LayoutRenderer) BuildTemplate(files ...string) *template.Template {
+	return template.Must(template.New(r.layoutName).Funcs(r.helpers).ParseFiles(files...))
 }
 
 // RenderTemplate executes the provided template and returns the error
 // if the execution fails.
-func (r *Renderer) RenderTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) error {
-	return errors.New("not implemented")
-}
-
-func (r *Renderer) PathToTemplateFiles(templates ...string) []string {
-	files := make([]string, len(templates))
-
-	for i, t := range templates {
-		files[i] = filepath.Join(r.path, t)
-	}
-	return files
+func (r *LayoutRenderer) RenderTemplate(w io.Writer, tmpl *template.Template, data interface{}) error {
+	return tmpl.Execute(w, data)
 }

@@ -1,4 +1,4 @@
-div.base {
+div.gopher {
 	height: 200px;
 	width: 200px;
 	margin:0 auto;
@@ -7,7 +7,7 @@ div.base {
 	background-image: url("/images/base_gopher.png");
 }
 
-div.base > div{
+div.gopher > div{
 	background-repeat: no-repeat;
 	position: absolute;
 	height: 200px;

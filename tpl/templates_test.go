@@ -3,12 +3,17 @@ package tpl
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"html/template"
 	"strings"
 	"testing"
 
 	"github.com/PuerkitoBio/goquery"
 )
+
+const LAYOUT_TEMPLATE_NAME = "layout"
+const CONTENT_TEMPLATE_NAME = "content"
+const HEAD_TEMPLATE_NAME = "head"
 
 func TestTemplateLayout(t *testing.T) {
 	var b bytes.Buffer
@@ -18,7 +23,7 @@ func TestTemplateLayout(t *testing.T) {
 		t.Fatalf("layout.tmpl was expected to parse without any errors. %v", err)
 	}
 
-	if err = tmpl.ExecuteTemplate(&b, "layout", "some data"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, LAYOUT_TEMPLATE_NAME, "some data"); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
 
@@ -28,15 +33,15 @@ func TestTemplateLayout(t *testing.T) {
 		t.Error("Expected to render html and body elements")
 	}
 
-	if tmpl.Lookup("layout") == nil {
+	if tmpl.Lookup(LAYOUT_TEMPLATE_NAME) == nil {
 		t.Error("layout.tmpl was expected to define template layout")
 	}
 
-	if tmpl.Lookup("content") == nil {
+	if tmpl.Lookup(CONTENT_TEMPLATE_NAME) == nil {
 		t.Error("layout.tmpl was expected to define empty template content")
 	}
 
-	if tmpl.Lookup("head") == nil {
+	if tmpl.Lookup(HEAD_TEMPLATE_NAME) == nil {
 		t.Error("layout.tmpl was expected to define empty template head")
 	}
 }
@@ -49,9 +54,12 @@ func TestLayoutWithHead(t *testing.T) {
 		t.Fatalf("head.tmpl was expected to parse without any errors. %v", err)
 	}
 
-	tmpl, err = tmpl.Parse(`{{define "head"}}<head><title>{{.}}</title></head>{{end}}`)
+	tmpl, err = tmpl.Parse(fmt.Sprintf(
+		`{{define "%s"}}
+			<head><title>{{.}}</title></head>
+		{{end}}`, HEAD_TEMPLATE_NAME))
 
-	if err = tmpl.ExecuteTemplate(&b, "layout", "TITLE"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, LAYOUT_TEMPLATE_NAME, "TITLE"); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
 	doc, err := goquery.NewDocumentFromReader(&b)
@@ -65,6 +73,7 @@ func TestLayoutWithHead(t *testing.T) {
 
 func TestLayoutWithContent(t *testing.T) {
 	var b bytes.Buffer
+	const expected = "some data"
 	tmpl, err := template.ParseFiles("./templates/layouts/layout.tmpl")
 
 	if err != nil {
@@ -73,15 +82,18 @@ func TestLayoutWithContent(t *testing.T) {
 
 	tmpl, err = tmpl.Parse(`{{define "content"}}{{.}}{{end}}`)
 
-	if err = tmpl.ExecuteTemplate(&b, "layout", "content"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, "layout", expected); err != nil {
 		t.Fatalf("template was expected to execute without errors. %v", err)
 	}
 	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if body := doc.Find("body"); body.Length() == 0 {
 		t.Error("Expected to render title element")
-	} else if strings.TrimSpace(body.Text()) != "content" {
-		t.Errorf("head.tmpl was expected to be rendered with body 'content' but got %s", body.Text())
+	} else {
+		txt := strings.TrimSpace(body.Text())
+		if txt != expected {
+			t.Errorf("head.tmpl was expected to be rendered with '%s' but got '%s'", expected, txt)
+		}
 	}
 }
 
@@ -160,6 +172,10 @@ func TestTemplatesHeadWithStyles(t *testing.T) {
 func TestTemplateWidget(t *testing.T) {
 	var b bytes.Buffer
 	h := copyFuncMap(Helpers)
+	if _, ok := h["clothes"]; !ok {
+		t.Fatal("clothes was expected to be added to helpers")
+	}
+
 	h["clothes"] = myClothes("crown", "cape")
 
 	tmpl := template.New("widget").Funcs(h)

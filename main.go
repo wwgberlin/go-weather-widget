@@ -11,6 +11,11 @@ import (
 )
 
 func main() {
+	const (
+		layoutsPath        = "./tpl/templates"
+		layoutTemplateName = "layout"
+	)
+
 	port := flag.String("port", "8080", "Optional: 4 bytes port")
 	apiKey := flag.String("api_key", "", "Required")
 	flag.Parse()
@@ -20,10 +25,10 @@ func main() {
 		return
 	}
 
-	rdr := tpl.NewRenderer("./tpl/templates", tpl.Helpers, "layout")
+	rdr := tpl.NewRenderer(tpl.Helpers, layoutTemplateName)
 
-	http.HandleFunc("/", indexHandler(rdr))
-	http.HandleFunc("/weather", widgetHandler(rdr, worldweatheronline.New(*apiKey)))
+	http.HandleFunc("/", indexHandler(layoutsPath, rdr))
+	http.HandleFunc("/weather", widgetHandler(layoutsPath, rdr, worldweatheronline.New(*apiKey)))
 	http.Handle("/images/", http.StripPrefix("/", http.FileServer(http.Dir("./public/static"))))
 	http.Handle("/styles/", http.StripPrefix("/", http.FileServer(http.Dir("./public/static"))))
 
