@@ -1,5 +1,5 @@
 <html>
-	{{template "head" .Name}}
+	{{block "head" .Name}}{{end}}
 	<body>
 		<h1>Hello {{.Name}}</h1>
 
@@ -12,8 +12,3 @@
 		</p>
 	</body>
 </html>
-
-<!-- we can pass in default definitions to templates to avoid errors -->
-{{define "head"}}
-	<!--expected not to show -->
-{{end}}
