@@ -40,5 +40,5 @@ Your task here is to register the function clothes in the helpers FuncMap and ca
 1. Implement BuildTemplate according to instructions
 2. Implement RenderTemplate according to instructions
 
-#### Now let's imeplement our widgetHandler (handlers.go)
+#### Now let's imeplement our widgetHandler (handler.go)
 Follow the instructions in the file to implement the widgetHandler
