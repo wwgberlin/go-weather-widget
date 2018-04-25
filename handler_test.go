@@ -21,13 +21,13 @@ type (
 		buildFunc     func(...string) *template.Template
 		renderFunc    func(io.Writer, *template.Template, interface{}) error
 	}
-	forcasterMock struct {
+	forecasterMock struct {
 		invoked  bool
 		forecast func(string) (*weather.Conditions, error)
 	}
 )
 
-func (f forcasterMock) Forecast(s string) (*weather.Conditions, error) {
+func (f forecasterMock) Forecast(s string) (*weather.Conditions, error) {
 	return f.forecast(s)
 }
 
@@ -137,7 +137,7 @@ func TestWidgetHandler_TestBuild(t *testing.T) {
 		},
 	}
 
-	widgetHandler("my/path/", rdr, forcasterMock{})
+	widgetHandler("my/path/", rdr, forecasterMock{})
 
 	if !rdr.buildInvoked {
 		t.Error("BuildTemplated was expected to be called")
@@ -160,7 +160,7 @@ func TestWidgetHandler_TestRender(t *testing.T) {
 		Celsius:     5,
 	}
 
-	forecaster := forcasterMock{
+	forecaster := forecasterMock{
 		forecast: func(s string) (*weather.Conditions, error) {
 			if s != queryLocation {
 				t.Errorf("Unexpected argument in call to Forecast. Wanted %s but got %s", queryLocation, s)

@@ -12,9 +12,9 @@ import (
 	. "github.com/wwgberlin/go-weather-widget/tpl"
 )
 
-const LAYOUT_TEMPLATE_NAME = "layout"
-const CONTENT_TEMPLATE_NAME = "content"
-const HEAD_TEMPLATE_NAME = "head"
+const layoutTemplateName = "layout"
+const contentTemplateName = "content"
+const headTemplateName = "head"
 
 func TestTemplateLayout(t *testing.T) {
 	var b bytes.Buffer
@@ -24,7 +24,7 @@ func TestTemplateLayout(t *testing.T) {
 		t.Fatalf("Template layout.tmpl was expected to parse without any errors. %v", err)
 	}
 
-	if err = tmpl.ExecuteTemplate(&b, LAYOUT_TEMPLATE_NAME, "some data"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, layoutTemplateName, "some data"); err != nil {
 		t.Fatalf("Template was expected to execute without errors. %v", err)
 	}
 
@@ -34,15 +34,15 @@ func TestTemplateLayout(t *testing.T) {
 		t.Error("Expected to render html and body elements")
 	}
 
-	if tmpl.Lookup(LAYOUT_TEMPLATE_NAME) == nil {
+	if tmpl.Lookup(layoutTemplateName) == nil {
 		t.Error("Template layout.tmpl was expected to define template layout")
 	}
 
-	if tmpl.Lookup(CONTENT_TEMPLATE_NAME) == nil {
+	if tmpl.Lookup(contentTemplateName) == nil {
 		t.Error("Template layout.tmpl was expected to define empty template content")
 	}
 
-	if tmpl.Lookup(HEAD_TEMPLATE_NAME) == nil {
+	if tmpl.Lookup(headTemplateName) == nil {
 		t.Error("Template layout.tmpl was expected to define empty template head")
 	}
 }
@@ -58,9 +58,9 @@ func TestLayoutWithHead(t *testing.T) {
 	tmpl, err = tmpl.Parse(fmt.Sprintf(
 		`{{define "%s"}}
 			<head><title>{{.}}</title></head>
-		{{end}}`, HEAD_TEMPLATE_NAME))
+		{{end}}`, headTemplateName))
 
-	if err = tmpl.ExecuteTemplate(&b, LAYOUT_TEMPLATE_NAME, "TITLE"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, layoutTemplateName, "TITLE"); err != nil {
 		t.Fatalf("Template was expected to execute without errors. %v", err)
 	}
 	doc, err := goquery.NewDocumentFromReader(&b)

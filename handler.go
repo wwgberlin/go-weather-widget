@@ -15,7 +15,7 @@ type (
 		RenderTemplate(io.Writer, *template.Template, interface{}) error
 	}
 
-	forcaster interface {
+	forecaster interface {
 		Forecast(string) (*weather.Conditions, error)
 	}
 )
@@ -49,14 +49,14 @@ func indexHandler(layoutsPath string, rdr renderer) func(w http.ResponseWriter, 
 // The forecaster provides a function Forecast that receives a location (string)
 // and returns weather.Conditions object with the fields:
 // Description, Location, Celsius
-// Call forcaster.Forecast with your request param -
+// Call forecaster.Forecast with your request param -
 // r.URL.Query().Get("location")
 //
 // Instantiate a map[string]interface{} to pass to template execution
 // and add the data from the Conditions to the map (use lower case)
 // e.g. m["location"] = c.Location, etc.
 
-func widgetHandler(layoutsPath string, rdr renderer, forecaster forcaster) func(w http.ResponseWriter, r *http.Request) {
+func widgetHandler(layoutsPath string, rdr renderer, forecaster forecaster) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "not implemented", http.StatusNotImplemented)
