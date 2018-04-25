@@ -3,7 +3,8 @@ div.gopher {
 	width: 200px;
 	margin:0 auto;
 	background-size: 200px 200px;
-	background: url("/images/base_gopher.png") no-repeat;
+	background-repeat: no-repeat;
+	background-image: url("/images/base_gopher.png");
 }
 
 div.gopher > div{
