@@ -57,26 +57,9 @@ func indexHandler(layoutsPath string, rdr renderer) func(w http.ResponseWriter, 
 // e.g. m["location"] = c.Location, etc.
 
 func widgetHandler(layoutsPath string, rdr renderer, forecaster forcaster) func(w http.ResponseWriter, r *http.Request) {
-	var (
-		tmpl *template.Template
-	)
-	files := pathToTemplateFiles(layoutsPath, "widget.tmpl", "layouts/layout.tmpl", "layouts/head.tmpl")
-	tmpl = rdr.BuildTemplate(files...)
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		queryStr := r.URL.Query().Get("location")
-		data, err := forecaster.Forecast(queryStr)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if err := rdr.RenderTemplate(w, tmpl, map[string]interface{}{
-			"location":    data.Location,
-			"celsius":     data.Celsius,
-			"description": data.Description,
-		}); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		http.Error(w, "not implemented", http.StatusNotImplemented)
 	}
 }
 
