@@ -13,13 +13,16 @@
 			Your output should be <div class="umbrella"/><div class="tshirt"/>
 
 		-->
+		{{range clothes .description .celsius}}
+			<div class="{{.}}" ></div>
+		{{end}}
 
 	</div>
 	<p class="description">The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C</p>
 {{end}}
 
 {{define "title"}}
-	<title>Weather Forecast in {{.location}}</title>
+	Weather Forecast in {{.location}}
 {{end}}
 
 {{define "styles"}}

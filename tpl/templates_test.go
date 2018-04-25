@@ -132,7 +132,7 @@ func TestTemplatesHeadWithTitle(t *testing.T) {
 		t.Fatalf("Template head.tmpl was expected to parse without any errors. %v", err)
 	}
 
-	tmpl, err = tmpl.Parse(`{{define "title"}}<title>{{.}}</title>{{end}}`)
+	tmpl, err = tmpl.Parse(`{{define "title"}}{{.}}{{end}}`)
 
 	if tmpl.ExecuteTemplate(&b, "head", "some_title"); err != nil {
 		t.Fatalf("Template was expected to execute without errors. %v", err)

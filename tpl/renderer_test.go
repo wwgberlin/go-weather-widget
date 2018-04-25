@@ -29,7 +29,7 @@ func TestBuildTemplate(t *testing.T) {
 		t.Error("BuildTemplate returned nil template")
 	} else {
 		if tmpl.Lookup("success1") == nil {
-			t.Error("Template success1 was not found in template. Did you call parse files?")
+			t.Error("Template success1 was not found in template. Did you call ParseFiles?")
 		}
 	}
 }
