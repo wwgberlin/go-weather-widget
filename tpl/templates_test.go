@@ -21,7 +21,7 @@ func TestTemplateLayout(t *testing.T) {
 	tmpl, err := template.ParseFiles("./templates/layouts/layout.tmpl")
 
 	if err != nil {
-		t.Fatalf("layout.tmpl was expected to parse without any errors. %v", err)
+		t.Fatalf("Template layout.tmpl was expected to parse without any errors. %v", err)
 	}
 
 	if err = tmpl.ExecuteTemplate(&b, LAYOUT_TEMPLATE_NAME, "some data"); err != nil {
@@ -35,15 +35,15 @@ func TestTemplateLayout(t *testing.T) {
 	}
 
 	if tmpl.Lookup(LAYOUT_TEMPLATE_NAME) == nil {
-		t.Error("layout.tmpl was expected to define template layout")
+		t.Error("Template layout.tmpl was expected to define template layout")
 	}
 
 	if tmpl.Lookup(CONTENT_TEMPLATE_NAME) == nil {
-		t.Error("layout.tmpl was expected to define empty template content")
+		t.Error("Template layout.tmpl was expected to define empty template content")
 	}
 
 	if tmpl.Lookup(HEAD_TEMPLATE_NAME) == nil {
-		t.Error("layout.tmpl was expected to define empty template head")
+		t.Error("Template layout.tmpl was expected to define empty template head")
 	}
 }
 
@@ -52,7 +52,7 @@ func TestLayoutWithHead(t *testing.T) {
 	tmpl, err := template.ParseFiles("./templates/layouts/layout.tmpl")
 
 	if err != nil {
-		t.Fatalf("head.tmpl was expected to parse without any errors. %v", err)
+		t.Fatalf("Template head.tmpl was expected to parse without any errors. %v", err)
 	}
 
 	tmpl, err = tmpl.Parse(fmt.Sprintf(
@@ -140,11 +140,13 @@ func TestTemplatesHeadWithTitle(t *testing.T) {
 
 	doc, err := goquery.NewDocumentFromReader(&b)
 
-	if head := doc.Find("head"); head.Length() == 0 {
-		t.Error("Expected to render title element")
-	} else if strings.TrimSpace(head.Text()) != "some_title" {
-		txt := head.Text()
-		t.Errorf("HEAD element was expected to have title 'some_title', but got '%s'", txt)
+	if title := doc.Find("head title"); title.Length() == 0 {
+		t.Error("Expected to render TITLE element")
+	} else {
+		txt := strings.TrimSpace(title.Text())
+		if txt != "some_title" {
+			t.Errorf("HEAD element was expected to have title 'some_title', but got '%s'", txt)
+		}
 	}
 }
 
