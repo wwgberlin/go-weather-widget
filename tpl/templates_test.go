@@ -165,10 +165,13 @@ func TestTemplatesHeadWithStyles(t *testing.T) {
 	}
 	doc, err := goquery.NewDocumentFromReader(&b)
 
-	if head := doc.Find("head"); head.Length() == 0 {
-		t.Error("Expected to render title element")
-	} else if html, _ := head.Html(); strings.TrimSpace(html) != "<link rel=\"some_link/\"/>" {
-		t.Errorf("HEAD element expected to have title 'some_link', but got '%s'", html)
+	if link := doc.Find("link"); link.Length() == 0 {
+		t.Error("Expected to render link element")
+	} else {
+		rel, ok := link.Attr("rel")
+		if !ok || rel != "some_link/" {
+			t.Errorf("HEAD element expected to have link 'some_link', but got '%s'", rel)
+		}
 	}
 }
 
