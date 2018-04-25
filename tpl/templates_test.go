@@ -60,15 +60,15 @@ func TestLayoutWithHead(t *testing.T) {
 			<head><title>{{.}}</title></head>
 		{{end}}`, headTemplateName))
 
-	if err = tmpl.ExecuteTemplate(&b, layoutTemplateName, "TITLE"); err != nil {
+	if err = tmpl.ExecuteTemplate(&b, layoutTemplateName, "title"); err != nil {
 		t.Fatalf("Template was expected to execute without errors. %v", err)
 	}
 	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if title := doc.Find("title"); title.Length() == 0 {
 		t.Error("Expected to render title element")
-	} else if title.Text() != "TITLE" {
-		t.Errorf("Template head.tmpl was expected to be rendered with title 'TITLE' but got '%s'", title.Text())
+	} else if title.Text() != "title" {
+		t.Errorf("Template head.tmpl was expected to be rendered with title 'title' but got '%s'", title.Text())
 	}
 }
 
@@ -132,7 +132,7 @@ func TestTemplatesHeadWithTitle(t *testing.T) {
 		t.Fatalf("Template head.tmpl was expected to parse without any errors. %v", err)
 	}
 
-	tmpl, err = tmpl.Parse(`{{define "title"}}{{.}}{{end}}`)
+	tmpl, err = tmpl.Parse(`{{define "title"}}<title>{{.}}</title>{{end}}`)
 
 	if tmpl.ExecuteTemplate(&b, "head", "some_title"); err != nil {
 		t.Fatalf("Template was expected to execute without errors. %v", err)
@@ -141,11 +141,11 @@ func TestTemplatesHeadWithTitle(t *testing.T) {
 	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if title := doc.Find("head title"); title.Length() == 0 {
-		t.Error("Expected to render TITLE element")
+		t.Error("Expected to render title element")
 	} else {
 		txt := strings.TrimSpace(title.Text())
 		if txt != "some_title" {
-			t.Errorf("HEAD element was expected to have title 'some_title', but got '%s'", txt)
+			t.Errorf("Head element was expected to have title 'some_title', but got '%s'", txt)
 		}
 	}
 }
@@ -170,7 +170,7 @@ func TestTemplatesHeadWithStyles(t *testing.T) {
 	} else {
 		rel, ok := link.Attr("rel")
 		if !ok || rel != "some_link/" {
-			t.Errorf("HEAD element expected to have link 'some_link', but got '%s'", rel)
+			t.Errorf("Head element expected to have link 'some_link', but got '%s'", rel)
 		}
 	}
 }

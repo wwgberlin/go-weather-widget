@@ -2,7 +2,6 @@
 	<a href="/?location={{urlquery .location}}">Search again</a>
 	<div class="gopher" >
 		<!--
-
 			DRESS YOUR GOPHER HERE!!
 			1. Add the function clothes to the helpers FuncMap
 
@@ -10,19 +9,19 @@
 			class="[piece]" for every piece. One div per clothing piece.
 
 			Example if the result of clothes is []string{"umbrella", "tshirt"}
-			Your output should be <div class="umbrella"/><div class="tshirt"/>
-
+			Your output should be
+			<div class="umbrella"></div><div class="tshirt"></div>
 		-->
-		{{range clothes .description .celsius}}
-			<div class="{{.}}" ></div>
-		{{end}}
+
+
+
 
 	</div>
 	<p class="description">The weather in {{ (title .location) }} is {{ .description }} at {{ .celsius }}°C</p>
 {{end}}
 
 {{define "title"}}
-	Weather Forecast in {{.location}}
+	<title>Weather Forecast in {{.location}}</title>
 {{end}}
 
 {{define "styles"}}
