@@ -67,7 +67,7 @@ func TestLayoutWithHead(t *testing.T) {
 	if title := doc.Find("title"); title.Length() == 0 {
 		t.Error("Expected to render title element")
 	} else if title.Text() != "TITLE" {
-		t.Errorf("head.tmpl was expected to be rendered with title'TITLE' but got %s", title.Text())
+		t.Errorf("head.tmpl was expected to be rendered with title 'TITLE' but got '%s'", title.Text())
 	}
 }
 
@@ -88,11 +88,11 @@ func TestLayoutWithContent(t *testing.T) {
 	doc, err := goquery.NewDocumentFromReader(&b)
 
 	if body := doc.Find("body"); body.Length() == 0 {
-		t.Error("Expected to render title element")
+		t.Error("Expected to render body element")
 	} else {
 		txt := strings.TrimSpace(body.Text())
 		if txt != expected {
-			t.Errorf("head.tmpl was expected to be rendered with '%s' but got '%s'", expected, txt)
+			t.Errorf("layout.tmpl was expected to be rendered with '%s' but got '%s'", expected, txt)
 		}
 	}
 }

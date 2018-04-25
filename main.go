@@ -10,6 +10,19 @@ import (
 	"github.com/wwgberlin/go-weather-widget/weather/worldweatheronline"
 )
 
+func validateInput(port string, apiKey string) bool {
+	var p int16
+	if _, err := fmt.Sscanf(port, "%d", &p); err != nil {
+		return false
+	}
+
+	if apiKey == "" {
+		return false
+	}
+
+	return true
+}
+
 func main() {
 	const (
 		layoutsPath        = "./tpl/templates"
@@ -29,22 +42,10 @@ func main() {
 
 	http.HandleFunc("/", indexHandler(layoutsPath, rdr))
 	http.HandleFunc("/weather", widgetHandler(layoutsPath, rdr, worldweatheronline.New(*apiKey)))
+
 	http.Handle("/images/", http.StripPrefix("/", http.FileServer(http.Dir("./public/static"))))
 	http.Handle("/styles/", http.StripPrefix("/", http.FileServer(http.Dir("./public/static"))))
 
 	log.Printf("Application serving on http://localhost:%s ...", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", *port), nil))
-}
-
-func validateInput(port string, apiKey string) bool {
-	var p int16
-	if _, err := fmt.Sscanf(port, "%d", &p); err != nil {
-		return false
-	}
-
-	if apiKey == "" {
-		return false
-	}
-
-	return true
 }

@@ -39,9 +39,8 @@ func indexHandler(layoutsPath string, rdr renderer) func(w http.ResponseWriter, 
 	}
 }
 
-// WidgetHandler receives a path to the template files
-// renderer and a forecaster and returns a function
-// with the http.HandleFunc signature.
+// WidgetHandler receives a path to the template files,
+// a renderer and a forecaster and returns an http handler function.
 //
 // Similarly to indexHandler above, instantiate your template with the
 // template files in the enclosing function (but replace index.tmpl with
